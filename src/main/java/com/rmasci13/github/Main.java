@@ -9,3 +9,5 @@ public class Main {
         SpringApplication.run(Main.class, args);
     }
 }
+
+//Turn on docker with: docker-compose up -d
