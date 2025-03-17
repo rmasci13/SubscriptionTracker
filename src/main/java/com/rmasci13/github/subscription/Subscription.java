@@ -107,4 +107,17 @@ public class Subscription {
     public int hashCode() {
         return Objects.hash(id, serviceName, cost, billingCycle, nextRenewalDate, category, paymentMethod);
     }
+
+    @Override
+    public String toString() {
+        return "Subscription{" +
+                "id=" + id +
+                ", serviceName='" + serviceName + '\'' +
+                ", cost=" + cost +
+                ", billingCycle=" + billingCycle +
+                ", nextRenewalDate=" + nextRenewalDate +
+                ", category='" + category + '\'' +
+                ", paymentMethod=" + paymentMethod +
+                '}';
+    }
 }
