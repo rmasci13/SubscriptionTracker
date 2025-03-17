@@ -11,3 +11,4 @@ public class Main {
 }
 
 //Turn on docker with: docker-compose up -d
+//Turn off at end with: docker-compose down

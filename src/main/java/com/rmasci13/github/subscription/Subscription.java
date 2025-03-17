@@ -2,11 +2,22 @@ package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.PaymentMethod;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
 public class Subscription {
+    @Id
+    @SequenceGenerator(
+            name = "subscription_id_sequence",
+            sequenceName = "subscription_id_sequence"
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "subscription_id_sequence"
+    )
     private Integer id;
     private String serviceName;
     private double cost;
@@ -23,6 +34,10 @@ public class Subscription {
         this.nextRenewalDate = nextRenewalDate;
         this.category = category;
         this.paymentMethod = paymentMethod;
+    }
+
+    public Subscription() {
+
     }
 
     public Integer getId() {
