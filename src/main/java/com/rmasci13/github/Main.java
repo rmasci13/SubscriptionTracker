@@ -20,4 +20,3 @@ public class Main {
 
 //TO DO
     //Category enum
-    //Response Handling and Error Handling so you dont get 500 Internal Error or something when ID not found
