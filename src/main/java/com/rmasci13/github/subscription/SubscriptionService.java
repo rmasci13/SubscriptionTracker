@@ -1,6 +1,7 @@
 package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
+import com.rmasci13.github.exception.ItemNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class SubscriptionService {
 
     //Get subscription by ID
     public SubscriptionDTO getSubscriptionDTOsById(Integer id) {
-        Subscription subscription = subscriptionRepository.findById(id).orElseThrow(() -> new RuntimeException("Subscription not found"));
+        Subscription subscription = findById(id);
         LocalDate nextRenewalDate = calculateNextRenewalDate(subscription);
         return new SubscriptionDTO(subscription, nextRenewalDate);
     }
@@ -43,7 +44,7 @@ public class SubscriptionService {
 
     //Update subscription
     public SubscriptionDTO updateSubscription(Integer id, SubscriptionDTO dto) {
-        Subscription currentSubscription = subscriptionRepository.findById(id).orElseThrow(() -> new RuntimeException("Subscription not found"));
+        Subscription currentSubscription = findById(id);
         currentSubscription.setServiceName(dto.getServiceName());
         currentSubscription.setBillingCycle(dto.getBillingCycle());
         currentSubscription.setCost(dto.getCost());
@@ -56,7 +57,7 @@ public class SubscriptionService {
     }
 
     public void deleteSubscription(Integer id) {
-        Subscription subscription = subscriptionRepository.findById(id).orElseThrow(() -> new RuntimeException("Subscription not found"));
+        Subscription subscription = findById(id);
         subscriptionRepository.delete(subscription);
     }
 
@@ -93,8 +94,11 @@ public class SubscriptionService {
             case QUARTERLY -> lastPaymentDate.plusMonths(3);
             case SEMI_ANNUALLY -> lastPaymentDate.plusMonths(6);
             case ANNUALLY -> lastPaymentDate.plusYears(1);
-            default -> throw new IllegalArgumentException("Invalid billing cycle: " + billingCycle);
         };
+    }
+
+    private Subscription findById(Integer id) {
+        return subscriptionRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Item not found with ID: " + id));
     }
 
 }

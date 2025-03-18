@@ -44,8 +44,9 @@ public class SubscriptionController {
     }
 
     @DeleteMapping(path="/{id}")
-    public void deleteSubscription(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteSubscription(@PathVariable Integer id) {
         subscriptionService.deleteSubscription(id);
+        return ResponseEntity.noContent().build();
     }
 }
 
