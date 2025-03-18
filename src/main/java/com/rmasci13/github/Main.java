@@ -11,4 +11,13 @@ public class Main {
 }
 
 //Turn on docker with: docker-compose up -d
+//Get into SQL bash with: docker exec -it postgres bash
+//Then do:                psql -U rmasci13
+//Connect to db with: \c subscription
 //Turn off at end with: docker-compose down
+
+
+
+//TO DO
+    //Category enum
+    //Response Handling and Error Handling so you dont get 500 Internal Error or something when ID not found

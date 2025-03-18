@@ -12,7 +12,8 @@ public class Subscription {
     @Id
     @SequenceGenerator(
             name = "subscription_id_sequence",
-            sequenceName = "subscription_id_sequence"
+            sequenceName = "subscription_id_sequence",
+            allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
@@ -22,16 +23,16 @@ public class Subscription {
     private String serviceName;
     private double cost;
     private BillingCycle billingCycle;
-    private LocalDate nextRenewalDate;
+    private LocalDate lastPaymentDate;
     private String category;
     private PaymentMethod paymentMethod;
 
-    public Subscription(Integer id, String serviceName, double cost, BillingCycle billingCycle, LocalDate nextRenewalDate, String category, PaymentMethod paymentMethod) {
+    public Subscription(Integer id, String serviceName, double cost, BillingCycle billingCycle, LocalDate lastPaymentDate, String category, PaymentMethod paymentMethod) {
         this.id = id;
         this.serviceName = serviceName;
         this.cost = cost;
         this.billingCycle = billingCycle;
-        this.nextRenewalDate = nextRenewalDate;
+        this.lastPaymentDate = lastPaymentDate;
         this.category = category;
         this.paymentMethod = paymentMethod;
     }
@@ -72,12 +73,12 @@ public class Subscription {
         this.billingCycle = billingCycle;
     }
 
-    public LocalDate getNextRenewalDate() {
-        return nextRenewalDate;
+    public LocalDate getLastPaymentDate() {
+        return lastPaymentDate;
     }
 
-    public void setNextRenewalDate(LocalDate nextRenewalDate) {
-        this.nextRenewalDate = nextRenewalDate;
+    public void setLastPaymentDate(LocalDate lastPaymentDate) {
+        this.lastPaymentDate = lastPaymentDate;
     }
 
     public String getCategory() {
@@ -100,12 +101,12 @@ public class Subscription {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Subscription that = (Subscription) o;
-        return Double.compare(cost, that.cost) == 0 && Objects.equals(id, that.id) && Objects.equals(serviceName, that.serviceName) && billingCycle == that.billingCycle && Objects.equals(nextRenewalDate, that.nextRenewalDate) && Objects.equals(category, that.category) && paymentMethod == that.paymentMethod;
+        return Double.compare(cost, that.cost) == 0 && Objects.equals(id, that.id) && Objects.equals(serviceName, that.serviceName) && billingCycle == that.billingCycle && Objects.equals(lastPaymentDate, that.lastPaymentDate) && Objects.equals(category, that.category) && paymentMethod == that.paymentMethod;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, serviceName, cost, billingCycle, nextRenewalDate, category, paymentMethod);
+        return Objects.hash(id, serviceName, cost, billingCycle, lastPaymentDate, category, paymentMethod);
     }
 
     @Override
@@ -115,7 +116,7 @@ public class Subscription {
                 ", serviceName='" + serviceName + '\'' +
                 ", cost=" + cost +
                 ", billingCycle=" + billingCycle +
-                ", nextRenewalDate=" + nextRenewalDate +
+                ", lastPaymentDate=" + lastPaymentDate +
                 ", category='" + category + '\'' +
                 ", paymentMethod=" + paymentMethod +
                 '}';
