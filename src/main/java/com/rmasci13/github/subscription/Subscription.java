@@ -1,6 +1,7 @@
 package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
+import com.rmasci13.github.enums.Category;
 import com.rmasci13.github.enums.PaymentMethod;
 import jakarta.persistence.*;
 
@@ -24,10 +25,10 @@ public class Subscription {
     private double cost;
     private BillingCycle billingCycle;
     private LocalDate lastPaymentDate;
-    private String category;
+    private Category category;
     private PaymentMethod paymentMethod;
 
-    public Subscription(Integer id, String serviceName, double cost, BillingCycle billingCycle, LocalDate lastPaymentDate, String category, PaymentMethod paymentMethod) {
+    public Subscription(Integer id, String serviceName, double cost, BillingCycle billingCycle, LocalDate lastPaymentDate, Category category, PaymentMethod paymentMethod) {
         this.id = id;
         this.serviceName = serviceName;
         this.cost = cost;
@@ -81,11 +82,11 @@ public class Subscription {
         this.lastPaymentDate = lastPaymentDate;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 

@@ -1,6 +1,7 @@
 package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
+import com.rmasci13.github.enums.Category;
 import com.rmasci13.github.enums.PaymentMethod;
 
 import java.time.LocalDate;
@@ -12,7 +13,7 @@ public class SubscriptionDTO {
     private BillingCycle billingCycle;
     private LocalDate lastPaymentDate;
     private LocalDate nextRenewalDate; // Calculated field
-    private String category;
+    private Category category;
     private PaymentMethod paymentMethod;
 
     //Default Constructor
@@ -79,11 +80,11 @@ public class SubscriptionDTO {
         this.nextRenewalDate = nextRenewalDate;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
