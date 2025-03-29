@@ -9,7 +9,7 @@ import java.time.LocalDate;
 public class SubscriptionDTO {
     private Integer id;
     private String serviceName;
-    private double cost;
+    private Double cost;
     private BillingCycle billingCycle;
     private LocalDate lastPaymentDate;
     private LocalDate nextRenewalDate; // Calculated field
@@ -95,4 +95,15 @@ public class SubscriptionDTO {
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
+
+    //"Has" Methods
+    public boolean hasPaymentMethod() { return paymentMethod != null; }
+
+    public boolean hasBillingCycle() { return billingCycle != null; }
+
+    public boolean hasLastPaymentDate() { return lastPaymentDate != null; }
+
+    public boolean hasCategory() { return category != null; }
+
+    public boolean hasCost() { return cost != null; }
 }

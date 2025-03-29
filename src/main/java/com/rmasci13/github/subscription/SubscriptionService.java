@@ -2,6 +2,7 @@ package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.exception.ItemNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,15 +44,24 @@ public class SubscriptionService {
     }
 
     //Update subscription
+    @Transactional
     public SubscriptionDTO updateSubscription(Integer id, SubscriptionDTO dto) {
         Subscription currentSubscription = findById(id);
-        currentSubscription.setServiceName(dto.getServiceName());
-        currentSubscription.setBillingCycle(dto.getBillingCycle());
-        currentSubscription.setCost(dto.getCost());
-        currentSubscription.setLastPaymentDate(dto.getLastPaymentDate());
-        currentSubscription.setCategory(dto.getCategory());
-        currentSubscription.setPaymentMethod(dto.getPaymentMethod());
-
+        if (dto.hasBillingCycle()) {
+            currentSubscription.setBillingCycle(dto.getBillingCycle());
+        }
+        if (dto.hasLastPaymentDate()) {
+            currentSubscription.setLastPaymentDate(dto.getLastPaymentDate());
+        }
+        if (dto.hasCategory()) {
+            currentSubscription.setCategory(dto.getCategory());
+        }
+        if (dto.hasCost()) {
+            currentSubscription.setCost(dto.getCost());
+        }
+        if (dto.hasPaymentMethod()) {
+            currentSubscription.setPaymentMethod(dto.getPaymentMethod());
+        }
         Subscription saved = subscriptionRepository.save(currentSubscription);
         return convertToDTO(saved);
     }

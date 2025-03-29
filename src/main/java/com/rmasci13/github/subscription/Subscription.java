@@ -22,7 +22,7 @@ public class Subscription {
     )
     private Integer id;
     private String serviceName;
-    private double cost;
+    private Double cost;
     private BillingCycle billingCycle;
     private LocalDate lastPaymentDate;
     private Category category;

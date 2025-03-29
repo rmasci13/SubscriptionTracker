@@ -17,6 +17,43 @@ public class Main {
 //Turn off at end with: docker-compose down
 
 
+//Can go into Maven tab, install to create the jar
+//Then cd into target, then java -jar SubscriptionTracker-0.0.1-SNAPSHOT.jar <--server.port=<number>>
+//Allows you to create multiple instances of it, and therefore specify ports
 
-//TO DO
-    //Category enum
+
+
+/*
+{
+  "serviceName": "Netflix",
+  "cost": 15.99,
+  "billingCycle": "MONTHLY",
+  "lastPaymentDate": "2025-01-29",
+  "category": "STREAMING",
+  "paymentMethod": "CREDIT_CARD"
+}
+{
+  "serviceName": "Xbox",
+  "cost": 59.99,
+  "billingCycle": "ANNUALLY",
+  "lastPaymentDate": "2025-03-18",
+  "category": "GAMING",
+  "paymentMethod": "CREDIT_CARD"
+}
+{
+  "serviceName": "Amazon",
+  "cost": 119.99,
+  "billingCycle": "ANNUALLY",
+  "lastPaymentDate": "2025-03-18",
+  "category": "DELIVERY",
+  "paymentMethod": "PAYPAL"
+}
+{
+  "serviceName": "Factor",
+  "cost": 49.99,
+  "billingCycle": "SEMI_ANNUALLY",
+  "lastPaymentDate": "2025-03-18",
+  "category": "FOOD",
+  "paymentMethod": "PAYPAL"
+}
+ */
