@@ -27,13 +27,18 @@ public class Main {
     //Continue User
 /*
 {
+    "username": "rmasci",
+    "email": "rmasci@example.com",
+    "password": "password"
+}
+{
   "serviceName": "Netflix",
   "cost": 15.99,
   "billingCycle": "MONTHLY",
   "lastPaymentDate": "2025-01-29",
   "category": "STREAMING",
-  "paymentMethod": "CREDIT_CARD"
-  "userid": 1
+  "paymentMethod": "CREDIT_CARD",
+  "userID": 1
 }
 {
   "serviceName": "Xbox",
@@ -42,7 +47,7 @@ public class Main {
   "lastPaymentDate": "2025-03-18",
   "category": "GAMING",
   "paymentMethod": "CREDIT_CARD",
-  "userid": 1
+  "userID": 1
 }
 {
   "serviceName": "Amazon",
@@ -51,7 +56,7 @@ public class Main {
   "lastPaymentDate": "2025-03-18",
   "category": "DELIVERY",
   "paymentMethod": "PAYPAL",
-   "userid": 1
+   "userID": 1
 }
 {
   "serviceName": "Factor",
@@ -60,6 +65,6 @@ public class Main {
   "lastPaymentDate": "2025-03-18",
   "category": "FOOD",
   "paymentMethod": "PAYPAL",
-  "userid": 1
+  "userID": 1
 }
  */

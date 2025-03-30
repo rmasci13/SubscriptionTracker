@@ -106,7 +106,9 @@ public class Subscription {
         return user;
     }
 
-    public void setUser(User user) {}
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -15,6 +15,7 @@ public class SubscriptionDTO {
     private LocalDate nextRenewalDate; // Calculated field
     private Category category;
     private PaymentMethod paymentMethod;
+    private Integer userID;
 
     //Default Constructor
     public SubscriptionDTO() {}
@@ -29,6 +30,7 @@ public class SubscriptionDTO {
         this.nextRenewalDate = nextRenewalDate;
         this.category = subscription.getCategory();
         this.paymentMethod = subscription.getPaymentMethod();
+        this.userID = subscription.getUser().getId();
     }
 
     //Getters and Setters
@@ -94,6 +96,14 @@ public class SubscriptionDTO {
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public Integer getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Integer userID) {
+        this.userID = userID;
     }
 
     //"Has" Methods

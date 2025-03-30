@@ -40,7 +40,7 @@ public class SubscriptionController {
         return ResponseEntity.created(location).body(created);
     }
 
-  @PutMapping(path="{id}")
+    @PutMapping(path="{id}")
     public ResponseEntity<SubscriptionDTO> updateSubscription(@PathVariable Integer id, @RequestBody SubscriptionDTO dto) {
         SubscriptionDTO updatedDTO = subscriptionService.updateSubscription(id, dto);
         return ResponseEntity.ok(updatedDTO);

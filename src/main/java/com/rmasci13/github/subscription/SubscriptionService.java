@@ -1,22 +1,28 @@
 package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
+import com.rmasci13.github.exception.ForbiddenException;
 import com.rmasci13.github.exception.ItemNotFoundException;
+import com.rmasci13.github.user.User;
+import com.rmasci13.github.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public SubscriptionService(SubscriptionRepository subscriptionRepository) {
+    public SubscriptionService(SubscriptionRepository subscriptionRepository, UserRepository userRepository) {
         this.subscriptionRepository = subscriptionRepository;
+        this.userRepository = userRepository;
     }
 
     //Get all subscriptions
@@ -31,14 +37,15 @@ public class SubscriptionService {
 
     //Get subscription by ID
     public SubscriptionDTO getSubscriptionDTOsById(Integer id) {
-        Subscription subscription = findById(id);
+        Subscription subscription = findBySubscriptionId(id);
         LocalDate nextRenewalDate = calculateNextRenewalDate(subscription);
         return new SubscriptionDTO(subscription, nextRenewalDate);
     }
 
     //Create new subscription
     public SubscriptionDTO createSubscription(SubscriptionDTO dto) {
-        Subscription subscription = convertToEntity(dto);
+        User user = findByUserId(dto.getUserID());
+        Subscription subscription = mapToSubscription(dto, user);
         Subscription saved = subscriptionRepository.save(subscription);
         return convertToDTO(saved);
     }
@@ -46,7 +53,11 @@ public class SubscriptionService {
     //Update subscription
     @Transactional
     public SubscriptionDTO updateSubscription(Integer id, SubscriptionDTO dto) {
-        Subscription currentSubscription = findById(id);
+        User user = findByUserId(dto.getUserID());
+        Subscription currentSubscription = findBySubscriptionId(id);
+        if (!currentSubscription.getUser().getId().equals(user.getId())) {
+            throw new ForbiddenException("Access denied. You do not have permission to update this subscription.");
+        }
         if (dto.hasBillingCycle()) {
             currentSubscription.setBillingCycle(dto.getBillingCycle());
         }
@@ -67,24 +78,22 @@ public class SubscriptionService {
     }
 
     public void deleteSubscription(Integer id) {
-        Subscription subscription = findById(id);
+        Subscription subscription = findBySubscriptionId(id);
         subscriptionRepository.delete(subscription);
     }
 
 //Business Logic Methods
 
     //Convert SubscriptionDTO to Subscription
-    private Subscription convertToEntity(SubscriptionDTO dto) {
+    private Subscription mapToSubscription(SubscriptionDTO dto, User user) {
         Subscription subscription = new Subscription();
-        if (dto.getId() != null) {
-            subscription.setId(dto.getId());
-        }
         subscription.setServiceName(dto.getServiceName());
         subscription.setCost(dto.getCost());
         subscription.setBillingCycle(dto.getBillingCycle());
         subscription.setLastPaymentDate(dto.getLastPaymentDate());
         subscription.setCategory(dto.getCategory());
         subscription.setPaymentMethod(dto.getPaymentMethod());
+        subscription.setUser(user);
         return subscription;
     }
 
@@ -107,8 +116,12 @@ public class SubscriptionService {
         };
     }
 
-    private Subscription findById(Integer id) {
-        return subscriptionRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Item not found with ID: " + id));
+    private Subscription findBySubscriptionId(Integer id) {
+        return subscriptionRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Subscription not found with ID: " + id));
+    }
+
+    private User findByUserId(Integer id) {
+        return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
     }
 
 }
