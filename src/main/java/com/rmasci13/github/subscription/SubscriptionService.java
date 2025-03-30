@@ -89,13 +89,13 @@ public class SubscriptionService {
     }
 
     //Convert Subscription to SubscriptionDTO
-    private SubscriptionDTO convertToDTO(Subscription entity) {
+    public SubscriptionDTO convertToDTO(Subscription entity) {
         LocalDate nextRenewalDate = calculateNextRenewalDate(entity);
         return new SubscriptionDTO(entity, nextRenewalDate);
     }
 
     //Calculate next renewal date based on last payment date
-    private LocalDate calculateNextRenewalDate(Subscription subscription) {
+    public LocalDate calculateNextRenewalDate(Subscription subscription) {
         LocalDate lastPaymentDate = subscription.getLastPaymentDate();
         BillingCycle billingCycle = subscription.getBillingCycle();
 

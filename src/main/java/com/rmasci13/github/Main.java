@@ -22,7 +22,9 @@ public class Main {
 //Allows you to create multiple instances of it, and therefore specify ports
 
 
-
+//To Do
+    //Refactor Subscription to work with User, User ID needs to be in the Post requests and stuff
+    //Continue User
 /*
 {
   "serviceName": "Netflix",
@@ -31,6 +33,7 @@ public class Main {
   "lastPaymentDate": "2025-01-29",
   "category": "STREAMING",
   "paymentMethod": "CREDIT_CARD"
+  "userid": 1
 }
 {
   "serviceName": "Xbox",
@@ -38,7 +41,8 @@ public class Main {
   "billingCycle": "ANNUALLY",
   "lastPaymentDate": "2025-03-18",
   "category": "GAMING",
-  "paymentMethod": "CREDIT_CARD"
+  "paymentMethod": "CREDIT_CARD",
+  "userid": 1
 }
 {
   "serviceName": "Amazon",
@@ -46,7 +50,8 @@ public class Main {
   "billingCycle": "ANNUALLY",
   "lastPaymentDate": "2025-03-18",
   "category": "DELIVERY",
-  "paymentMethod": "PAYPAL"
+  "paymentMethod": "PAYPAL",
+   "userid": 1
 }
 {
   "serviceName": "Factor",
@@ -54,6 +59,7 @@ public class Main {
   "billingCycle": "SEMI_ANNUALLY",
   "lastPaymentDate": "2025-03-18",
   "category": "FOOD",
-  "paymentMethod": "PAYPAL"
+  "paymentMethod": "PAYPAL",
+  "userid": 1
 }
  */

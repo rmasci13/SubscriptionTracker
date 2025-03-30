@@ -3,6 +3,7 @@ package com.rmasci13.github.subscription;
 import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.Category;
 import com.rmasci13.github.enums.PaymentMethod;
+import com.rmasci13.github.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -27,8 +28,11 @@ public class Subscription {
     private LocalDate lastPaymentDate;
     private Category category;
     private PaymentMethod paymentMethod;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public Subscription(Integer id, String serviceName, double cost, BillingCycle billingCycle, LocalDate lastPaymentDate, Category category, PaymentMethod paymentMethod) {
+    public Subscription(Integer id, String serviceName, double cost, BillingCycle billingCycle, LocalDate lastPaymentDate, Category category, PaymentMethod paymentMethod, User user) {
         this.id = id;
         this.serviceName = serviceName;
         this.cost = cost;
@@ -36,10 +40,10 @@ public class Subscription {
         this.lastPaymentDate = lastPaymentDate;
         this.category = category;
         this.paymentMethod = paymentMethod;
+        this.user = user;
     }
 
     public Subscription() {
-
     }
 
     public Integer getId() {
@@ -98,11 +102,17 @@ public class Subscription {
         this.paymentMethod = paymentMethod;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {}
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Subscription that = (Subscription) o;
-        return Double.compare(cost, that.cost) == 0 && Objects.equals(id, that.id) && Objects.equals(serviceName, that.serviceName) && billingCycle == that.billingCycle && Objects.equals(lastPaymentDate, that.lastPaymentDate) && Objects.equals(category, that.category) && paymentMethod == that.paymentMethod;
+        return Objects.equals(id, that.id) && Objects.equals(serviceName, that.serviceName);
     }
 
     @Override
