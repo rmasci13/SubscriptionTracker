@@ -26,11 +26,31 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping(path="{id}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable Integer id) {
+        UserDTO user = userService.getUser(id);
+        return ResponseEntity.ok(user);
+    }
+
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserRequestDTO user) {
         UserDTO created = userService.createUser(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(created.id()).toUri();
         return ResponseEntity.created(location).body(created);
     }
+
+    @PutMapping(path="{id}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserRequestDTO user) {
+        UserDTO updatedUser = userService.updateUser(id, user);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping(path="{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }

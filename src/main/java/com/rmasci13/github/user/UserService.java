@@ -1,11 +1,13 @@
 package com.rmasci13.github.user;
 
 import com.rmasci13.github.exception.ForbiddenException;
+import com.rmasci13.github.exception.ItemNotFoundException;
 import com.rmasci13.github.subscription.Subscription;
 import com.rmasci13.github.subscription.SubscriptionDTO;
 import com.rmasci13.github.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +34,12 @@ public class UserService {
                 collect(Collectors.toList());
     }
 
+    //Get single user
+    public UserDTO getUser(Integer id) {
+        User user = findByUserId(id);
+        return mapToUserDTO(user);
+    }
+
     //Create a User
     public UserDTO createUser(UserRequestDTO userRequestDTO) {
         Optional<User> userOptional = userRepository.findByUsername(userRequestDTO.username());
@@ -41,6 +49,28 @@ public class UserService {
         User user = mapToUser(userRequestDTO);
         User created = userRepository.save(user);
         return mapToUserDTO(created);
+    }
+
+    //Update user
+    public UserDTO updateUser(@PathVariable Integer id, UserRequestDTO userRequestDTO) {
+        User user = findByUserId(id);
+        if (userRequestDTO.hasUsername()) {
+            user.setUsername(userRequestDTO.username());
+        }
+        if (userRequestDTO.hasPassword()) {
+            user.setPassword(userRequestDTO.password());
+        }
+        if (userRequestDTO.hasEmail()) {
+            user.setEmail(userRequestDTO.email());
+        }
+        User updated = userRepository.save(user);
+        return mapToUserDTO(user);
+    }
+
+    //Delete user
+    public void deleteUser(@PathVariable Integer id) {
+        User user = findByUserId(id);
+        userRepository.delete(user);
     }
 
 
@@ -71,6 +101,10 @@ public class UserService {
         user.setEmail(userRequestDTO.email());
         user.setPassword(userRequestDTO.password());
         return user;
+    }
+
+    private User findByUserId(Integer id) {
+        return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
     }
 
 }
