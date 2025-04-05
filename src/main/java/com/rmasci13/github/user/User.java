@@ -2,14 +2,19 @@ package com.rmasci13.github.user;
 
 import com.rmasci13.github.subscription.Subscription;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     @Id
     @SequenceGenerator(
             name = "user_id_sequence",
@@ -26,6 +31,12 @@ public class User {
     private String password;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subscription> subscriptions;
+    private boolean enabled = true;
+    private boolean accountNonExpired = true;
+    private boolean credentialsNonExpired = true;
+    private boolean accountNonLocked = true;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
     public User(Integer id, String username, String email, String password) {
         this.id = id;
@@ -87,5 +98,32 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id, username, email, password, subscriptions);
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return accountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toList());
     }
 }
