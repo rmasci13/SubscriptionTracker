@@ -44,6 +44,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         subscriptions = new ArrayList<>();
+        roles.add("ROLE_USER");
     }
 
     public User() {}
@@ -125,5 +126,9 @@ public class User implements UserDetails {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
+    }
+
+    public void setRoles(String roleAdmin) {
+        roles.add(roleAdmin);
     }
 }

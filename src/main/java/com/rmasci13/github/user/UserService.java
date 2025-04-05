@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -22,11 +23,13 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final SubscriptionService subscriptionService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, SubscriptionService subscriptionService) {
+    public UserService(UserRepository userRepository, SubscriptionService subscriptionService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.subscriptionService = subscriptionService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     //Get all users
@@ -45,7 +48,7 @@ public class UserService implements UserDetailsService {
 
     //Create a User
     public UserDTO createUser(UserRequestDTO userRequestDTO) {
-        Optional<User> userOptional = userRepository.findByUserName(userRequestDTO.username());
+        Optional<User> userOptional = userRepository.findByUsername(userRequestDTO.username());
         if (userOptional.isPresent()) {
             throw new ForbiddenException("User with username " + userRequestDTO.username() + " already exists");
         }
@@ -61,7 +64,7 @@ public class UserService implements UserDetailsService {
             user.setUsername(userRequestDTO.username());
         }
         if (userRequestDTO.hasPassword()) {
-            user.setPassword(userRequestDTO.password());
+            user.setPassword(passwordEncoder.encode(userRequestDTO.password()));
         }
         if (userRequestDTO.hasEmail()) {
             user.setEmail(userRequestDTO.email());
@@ -102,7 +105,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setUsername(userRequestDTO.username());
         user.setEmail(userRequestDTO.email());
-        user.setPassword(userRequestDTO.password());
+        user.setPassword(passwordEncoder.encode(userRequestDTO.password()));
         return user;
     }
 
@@ -112,6 +115,6 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("User not found:" + username));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found:" + username));
     }
 }
