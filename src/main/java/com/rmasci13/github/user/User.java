@@ -131,4 +131,8 @@ public class User implements UserDetails {
     public void setRoles(String roleAdmin) {
         roles.add(roleAdmin);
     }
+
+    public List<String> getRoles() {
+        return roles;
+    }
 }

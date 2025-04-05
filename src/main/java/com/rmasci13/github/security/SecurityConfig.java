@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/**")  // Exclude API endpoints from CSRF protection
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().authenticated()
+                        .anyRequest().hasRole("ADMIN")
                 )
                 .httpBasic(Customizer.withDefaults());
 
@@ -57,7 +57,7 @@ public class SecurityConfig {
                 defaultUser.setUsername("admin");
                 defaultUser.setPassword(encodedPassword);
                 // Set appropriate roles based on your application
-                defaultUser.setRoles("ROLE_ADMIN"); // Adjust according to your User entity structure
+                defaultUser.setRoles("ADMIN"); // Adjust according to your User entity structure
                 userRepository.save(defaultUser);
             }
         };
