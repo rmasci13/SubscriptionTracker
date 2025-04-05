@@ -6,6 +6,9 @@ import com.rmasci13.github.subscription.Subscription;
 import com.rmasci13.github.subscription.SubscriptionDTO;
 import com.rmasci13.github.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -16,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final SubscriptionService subscriptionService;
 
@@ -42,7 +45,7 @@ public class UserService {
 
     //Create a User
     public UserDTO createUser(UserRequestDTO userRequestDTO) {
-        Optional<User> userOptional = userRepository.findByUsername(userRequestDTO.username());
+        Optional<User> userOptional = userRepository.findByUserName(userRequestDTO.username());
         if (userOptional.isPresent()) {
             throw new ForbiddenException("User with username " + userRequestDTO.username() + " already exists");
         }
@@ -107,4 +110,8 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("User not found:" + username));
+    }
 }
