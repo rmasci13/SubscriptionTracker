@@ -4,6 +4,7 @@ import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.PaymentMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,18 +23,21 @@ public class SubscriptionController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SubscriptionDTO>> getSubscriptions() {
         List<SubscriptionDTO> dtos = subscriptionService.getSubscriptionDTOs();
         return ResponseEntity.ok(dtos);
     }
 
     @GetMapping(path="{id}")
+    @PreAuthorize("hasRole('ADMIN') or @subscriptionService.isOwner(authentication.principal.id, #id)")
     public ResponseEntity<SubscriptionDTO> getSubscription(@PathVariable Integer id) {
         SubscriptionDTO dto = subscriptionService.getSubscriptionDTOsById(id);
         return ResponseEntity.ok(dto);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or #dto.userID == authentication.principal.id")
     public ResponseEntity<SubscriptionDTO> createSubscription(@RequestBody SubscriptionDTO dto) {
         SubscriptionDTO created = subscriptionService.createSubscription(dto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(created.getId()).toUri();
@@ -41,12 +45,14 @@ public class SubscriptionController {
     }
 
     @PutMapping(path="{id}")
+    @PreAuthorize("hasRole('ADMIN') or @subscriptionService.isOwner(authentication.principal.id, #id)")
     public ResponseEntity<SubscriptionDTO> updateSubscription(@PathVariable Integer id, @RequestBody SubscriptionDTO dto) {
         SubscriptionDTO updatedDTO = subscriptionService.updateSubscription(id, dto);
         return ResponseEntity.ok(updatedDTO);
     }
 
     @DeleteMapping(path="{id}")
+    @PreAuthorize("hasRole('ADMIN') or @subscriptionService.isOwner(authentication.principal.id, #id)")
     public ResponseEntity<Void> deleteSubscription(@PathVariable Integer id) {
         subscriptionService.deleteSubscription(id);
         return ResponseEntity.noContent().build();

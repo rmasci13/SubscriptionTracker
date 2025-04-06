@@ -53,11 +53,7 @@ public class SubscriptionService {
     //Update subscription
     @Transactional
     public SubscriptionDTO updateSubscription(Integer id, SubscriptionDTO dto) {
-        User user = findByUserId(dto.getUserID());
         Subscription currentSubscription = findBySubscriptionId(id);
-        if (!currentSubscription.getUser().getId().equals(user.getId())) {
-            throw new ForbiddenException("Access denied. You do not have permission to update this subscription.");
-        }
         if (dto.hasBillingCycle()) {
             currentSubscription.setBillingCycle(dto.getBillingCycle());
         }
@@ -122,6 +118,11 @@ public class SubscriptionService {
 
     private User findByUserId(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
+    }
+
+    public boolean isOwner(Integer userId, Integer subscriptionId) {
+        Subscription subscription = findBySubscriptionId(subscriptionId);
+        return userId.equals(subscription.getUser().getId());
     }
 
 }

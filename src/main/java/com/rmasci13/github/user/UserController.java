@@ -3,6 +3,7 @@ package com.rmasci13.github.user;
 import com.rmasci13.github.subscription.SubscriptionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -21,12 +22,14 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> getUsers() {
         List<UserDTO> users = userService.getUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping(path="{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<UserDTO> getUser(@PathVariable Integer id) {
         UserDTO user = userService.getUser(id);
         return ResponseEntity.ok(user);
@@ -40,12 +43,14 @@ public class UserController {
     }
 
     @PutMapping(path="{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserRequestDTO user) {
         UserDTO updatedUser = userService.updateUser(id, user);
         return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping(path="{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
