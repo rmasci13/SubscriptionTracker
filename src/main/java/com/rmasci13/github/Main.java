@@ -21,10 +21,10 @@ public class Main {
 //Then cd into target, then java -jar SubscriptionTracker-0.0.1-SNAPSHOT.jar <--server.port=<number>>
 //Allows you to create multiple instances of it, and therefore specify ports
 
+//To use Postman with Form Login:
+//Need to set response body to x-www-form-encoded
+//Set the username and password as the two entries
 
-//To Do
-    //Refactor Subscription to work with User, User ID needs to be in the Post requests and stuff
-    //Continue User
 /*
 {
     "username": "rmasci",

@@ -42,7 +42,10 @@ public class SecurityConfig {
                         .permitAll()
                         .defaultSuccessUrl("/index", true)
                 )
-                .rememberMe(Customizer.withDefaults()
+                .rememberMe(Customizer.withDefaults())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
         );
         return http.build();
     }
