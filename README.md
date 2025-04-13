@@ -113,4 +113,3 @@ The application implements Spring Security with:
 ## Acknowledgments
 
 - Built with Spring Boot and Spring Security
-- Special thanks to the Spring community for their excellent documentation and support
