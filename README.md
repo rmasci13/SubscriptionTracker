@@ -27,7 +27,6 @@ Subscription Tracker is a web application that allows users to track their vario
 - **Frontend**:
   - Thymeleaf
   - HTML/CSS
-  - Bootstrap (likely)
 - **Database**:
   - Compatible with various SQL databases (H2, PostgreSQL, MySQL)
 - **Build Tool**:
@@ -37,7 +36,7 @@ Subscription Tracker is a web application that allows users to track their vario
 
 - JDK 17 or higher
 - Maven 3.6+
-- Database (configured in application.properties)
+- Database (configured in application.yml)
 
 ## Installation & Setup
 
@@ -47,7 +46,7 @@ git clone https://github.com/rmasci13/SubscriptionTracker.git
 cd SubscriptionTracker
 ```
 
-2. Configure your database connection in `src/main/resources/application.properties`
+2. Configure your database connection in `src/main/resources/application.yml`
 
 3. Build the application:
 ```bash
