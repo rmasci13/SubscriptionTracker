@@ -2,7 +2,7 @@ package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.Category;
-import com.rmasci13.github.enums.PaymentMethod;
+import com.rmasci13.github.enums.Status;
 import com.rmasci13.github.user.User;
 import jakarta.persistence.*;
 
@@ -27,12 +27,16 @@ public class Subscription {
     private BillingCycle billingCycle;
     private LocalDate lastPaymentDate;
     private Category category;
-    private PaymentMethod paymentMethod;
+    private String paymentMethod;
+    private Status status;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Subscription(Integer id, String serviceName, double cost, BillingCycle billingCycle, LocalDate lastPaymentDate, Category category, PaymentMethod paymentMethod, User user) {
+    public Subscription(Integer id, String serviceName,
+                        double cost, BillingCycle billingCycle,
+                        LocalDate lastPaymentDate, Category category,
+                        String paymentMethod, User user, Status status) {
         this.id = id;
         this.serviceName = serviceName;
         this.cost = cost;
@@ -41,6 +45,7 @@ public class Subscription {
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.user = user;
+        this.status = status;
     }
 
     public Subscription() {
@@ -94,11 +99,11 @@ public class Subscription {
         this.category = category;
     }
 
-    public PaymentMethod getPaymentMethod() {
+    public String getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
+    public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
@@ -110,6 +115,10 @@ public class Subscription {
         this.user = user;
     }
 
+    public Status getStatus() { return status; }
+
+    public void setStatus(Status status) { this.status = status; }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -119,7 +128,8 @@ public class Subscription {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, serviceName, cost, billingCycle, lastPaymentDate, category, paymentMethod);
+        return Objects.hash(id, serviceName, cost, billingCycle,
+                lastPaymentDate, category, paymentMethod, status, user);
     }
 
     @Override
@@ -132,6 +142,8 @@ public class Subscription {
                 ", lastPaymentDate=" + lastPaymentDate +
                 ", category='" + category + '\'' +
                 ", paymentMethod=" + paymentMethod +
+                ", status=" + status +
+                ", user=" + user +
                 '}';
     }
 }

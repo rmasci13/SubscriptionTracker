@@ -7,13 +7,18 @@
         <meta name="author" content="">
         <title>Home Page</title>
         <link rel="stylesheet" th:href="@{/css/standard.css}">
+        <script>
+            const userId = userID;
+        </script>
+        <script th:src="@{/js/index.js}" type="text/javascript"></script>
     </head>
     <body>
-        <h1>Temporary</h1>
-        <div class="content">
+        <div class="Logout">
             <form class="logout-form" method="post" action="/logout">
                 <button type="submit" class="primary">Logout</button>
             </form>
+        </div>
+        <div class="content">
         </div>
     </body>
 </html>

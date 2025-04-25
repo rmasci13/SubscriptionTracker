@@ -2,7 +2,7 @@ package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.Category;
-import com.rmasci13.github.enums.PaymentMethod;
+import com.rmasci13.github.enums.Status;
 
 import java.time.LocalDate;
 
@@ -14,7 +14,8 @@ public class SubscriptionDTO {
     private LocalDate lastPaymentDate;
     private LocalDate nextRenewalDate; // Calculated field
     private Category category;
-    private PaymentMethod paymentMethod;
+    private String paymentMethod;
+    private Status status;
     private Integer userID;
 
     //Default Constructor
@@ -30,6 +31,7 @@ public class SubscriptionDTO {
         this.nextRenewalDate = nextRenewalDate;
         this.category = subscription.getCategory();
         this.paymentMethod = subscription.getPaymentMethod();
+        this.status = subscription.getStatus();
         this.userID = subscription.getUser().getId();
     }
 
@@ -90,11 +92,11 @@ public class SubscriptionDTO {
         this.category = category;
     }
 
-    public PaymentMethod getPaymentMethod() {
+    public String getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
+    public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
@@ -106,6 +108,10 @@ public class SubscriptionDTO {
         this.userID = userID;
     }
 
+    public Status getStatus() { return status; }
+
+    public void setStatus(Status status) { this.status = status; }
+
     //"Has" Methods
     public boolean hasPaymentMethod() { return paymentMethod != null; }
 
@@ -116,4 +122,6 @@ public class SubscriptionDTO {
     public boolean hasCategory() { return category != null; }
 
     public boolean hasCost() { return cost != null; }
+
+    public boolean hasStatus() { return status != null; }
 }

@@ -37,7 +37,8 @@ public class Main {
   "billingCycle": "MONTHLY",
   "lastPaymentDate": "2025-01-29",
   "category": "STREAMING",
-  "paymentMethod": "CREDIT_CARD",
+  "paymentMethod": "AMEX",
+  "status": "ACTIVE",
   "userID": 2
 }
 {
@@ -46,7 +47,8 @@ public class Main {
   "billingCycle": "ANNUALLY",
   "lastPaymentDate": "2025-03-18",
   "category": "GAMING",
-  "paymentMethod": "CREDIT_CARD",
+  "paymentMethod": "AMEX",
+  "status": "ACTIVE",
   "userID": 2
 }
 {
@@ -55,7 +57,8 @@ public class Main {
   "billingCycle": "ANNUALLY",
   "lastPaymentDate": "2025-03-18",
   "category": "DELIVERY",
-  "paymentMethod": "PAYPAL",
+  "paymentMethod": "MASTERCARD",
+  "status": "ACTIVE",
    "userID": 2
 }
 {
@@ -65,6 +68,7 @@ public class Main {
   "lastPaymentDate": "2025-03-18",
   "category": "FOOD",
   "paymentMethod": "PAYPAL",
+  "status": "ACTIVE",
   "userID": 2
 }
  */

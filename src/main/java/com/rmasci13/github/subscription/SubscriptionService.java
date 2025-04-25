@@ -69,6 +69,9 @@ public class SubscriptionService {
         if (dto.hasPaymentMethod()) {
             currentSubscription.setPaymentMethod(dto.getPaymentMethod());
         }
+        if (dto.hasStatus()) {
+            currentSubscription.setStatus(dto.getStatus());
+        }
         Subscription saved = subscriptionRepository.save(currentSubscription);
         return convertToDTO(saved);
     }
@@ -89,6 +92,7 @@ public class SubscriptionService {
         subscription.setLastPaymentDate(dto.getLastPaymentDate());
         subscription.setCategory(dto.getCategory());
         subscription.setPaymentMethod(dto.getPaymentMethod());
+        subscription.setStatus(dto.getStatus());
         subscription.setUser(user);
         return subscription;
     }

@@ -4,6 +4,8 @@ import com.rmasci13.github.subscription.SubscriptionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -34,6 +36,14 @@ public class UserController {
         UserDTO user = userService.getUser(id);
         return ResponseEntity.ok(user);
     }
+
+//    @GetMapping("/api/user/me")
+//    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
+//        User loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        Integer userID = loggedUser.getId();
+//        UserDTO user = userService.getUser(userID);
+//        return ResponseEntity.ok(user);
+//    }
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserRequestDTO user) {
