@@ -19,10 +19,15 @@ public class TemplateController {
     }
 
     @GetMapping("index")
-    public String getIndexView(Model model, Authentication auth) {
-        User loggedUser = (User) auth.getPrincipal();
-        Integer userID = loggedUser.getId();
-        model.addAttribute("userID", userID);
+    public String getIndexView() {
         return "index";
     }
+
+//    @GetMapping("index")
+//    public String getIndexView(Model model, Authentication auth) {
+//        User loggedUser = (User) auth.getPrincipal();
+//        Integer userID = loggedUser.getId();
+//        model.addAttribute("userID", userID);
+//        return "index";
+//    }
 }

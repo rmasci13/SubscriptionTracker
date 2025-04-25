@@ -5,13 +5,19 @@ document.addEventListener("DOMContentLoaded", function() {
 function createTable() {
     const contentArea = document.querySelector('.content');
     fetch('/api/user/me')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(userData => {
+            console.log(userData);
             const subscriptions = userData.subscriptions;
             console.log(subscriptions);
             // Create and append the table
             const table = document.createElement('table');
-            table.className = 'subscription-table';
+            table.className = 'table table-dark';
 
             // Create table header
             const thead = document.createElement('thead');
@@ -46,13 +52,27 @@ function createTable() {
                     <td>${sub.paymentMethod}</td>
                     <td>${sub.status}</td>
                     <td>
-                        <button class="edit-btn" data-id="${sub.id}">Edit</button>
-                        <button class="delete-btn" data-id="${sub.id}">Delete</button>
+                        <button class="btn btn-info" data-id="${sub.id}">Edit</button>
+                        <button class="btn btn-danger" data-id="${sub.id}">Delete</button>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
-
+            //Create blank row to add new subscription TO DO
+            const addRow = document.createElement('tr');
+            addRow.innerHTML = `
+                    <td>${sub.serviceName}</td>
+                    <td>${sub.category}</td>
+                    <td>$${sub.cost}</td>
+                    <td>${sub.billingCycle}</td>
+                    <td>${sub.lastPaymentDate}</td>
+                    <td>${sub.nextRenewalDate}</td>
+                    <td>${sub.paymentMethod}</td>
+                    <td>${sub.status}</td>
+                    <td>
+                        <button class="btn btn-success" type="submit">Submit</button>
+                    </td>
+                `;
             table.appendChild(tbody);
             contentArea.appendChild(table);
         })

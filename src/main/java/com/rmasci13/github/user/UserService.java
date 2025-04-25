@@ -46,6 +46,11 @@ public class UserService implements UserDetailsService {
         return mapToUserDTO(user);
     }
 
+    public UserDTO getUserByUsername(String username) {
+        User user = findByUsername(username);
+        return mapToUserDTO(user);
+    }
+
     //Create a User
     public UserDTO createUser(UserRequestDTO userRequestDTO) {
         Optional<User> userOptional = userRepository.findByUsername(userRequestDTO.username());
@@ -111,6 +116,10 @@ public class UserService implements UserDetailsService {
 
     private User findByUserId(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
+    }
+
+    private User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username));
     }
 
     @Override

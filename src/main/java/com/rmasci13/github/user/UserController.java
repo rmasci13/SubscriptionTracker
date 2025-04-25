@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,13 +38,12 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-//    @GetMapping("/api/user/me")
-//    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
-//        User loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        Integer userID = loggedUser.getId();
-//        UserDTO user = userService.getUser(userID);
-//        return ResponseEntity.ok(user);
-//    }
+    @GetMapping("me")
+    public ResponseEntity<UserDTO> getCurrentUser(Principal principal) {
+        String username = principal.getName();
+        UserDTO user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(user);
+    }
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserRequestDTO user) {
