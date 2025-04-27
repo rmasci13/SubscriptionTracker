@@ -25,6 +25,7 @@ public class UserService implements UserDetailsService {
     private final SubscriptionService subscriptionService;
     private final PasswordEncoder passwordEncoder;
 
+    //Constructor
     @Autowired
     public UserService(UserRepository userRepository, SubscriptionService subscriptionService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -46,12 +47,13 @@ public class UserService implements UserDetailsService {
         return mapToUserDTO(user);
     }
 
+    //Get current user's DTO
     public UserDTO getUserByUsername(String username) {
         User user = findByUsername(username);
         return mapToUserDTO(user);
     }
 
-    //Create a User
+    //Create a new User
     public UserDTO createUser(UserRequestDTO userRequestDTO) {
         Optional<User> userOptional = userRepository.findByUsername(userRequestDTO.username());
         if (userOptional.isPresent()) {
@@ -97,7 +99,7 @@ public class UserService implements UserDetailsService {
         else {
             subscriptionDTOs = new ArrayList<SubscriptionDTO>();
         }
-        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), subscriptionDTOs);
+        return new UserDTO(user.getUsername(), user.getEmail(), subscriptionDTOs);
     }
 
     //Private helper converting Subscription to SubscriptionDTO

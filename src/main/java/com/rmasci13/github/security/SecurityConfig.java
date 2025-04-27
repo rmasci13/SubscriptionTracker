@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,7 +34,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) //Leaving disabled for convenience of Postman
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/logout", "/public/**", "/css/*.css", "/static/css/**", "/js/*.js").permitAll()
+                        .requestMatchers("/login", "/logout", "/public/**", "/css/*.css", "/static/css/**", "/js/*.js", "/signup").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

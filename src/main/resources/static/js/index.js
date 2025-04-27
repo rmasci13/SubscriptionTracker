@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function createTable() {
     const contentArea = document.querySelector('.content');
-    fetch('/api/user/me')
+    fetch('/public/api/user/me')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -61,14 +61,14 @@ function createTable() {
             //Create blank row to add new subscription TO DO
             const addRow = document.createElement('tr');
             addRow.innerHTML = `
-                    <td>${sub.serviceName}</td>
-                    <td>${sub.category}</td>
-                    <td>$${sub.cost}</td>
-                    <td>${sub.billingCycle}</td>
-                    <td>${sub.lastPaymentDate}</td>
-                    <td>${sub.nextRenewalDate}</td>
-                    <td>${sub.paymentMethod}</td>
-                    <td>${sub.status}</td>
+                    <td>Blank</td>
+                    <td>Blank</td>
+                    <td>Blank</td>
+                    <td>Blank</td>
+                    <td>Blank</td>
+                    <td>Blank</td>
+                    <td>Blank</td>
+                    <td>Blank</td>
                     <td>
                         <button class="btn btn-success" type="submit">Submit</button>
                     </td>

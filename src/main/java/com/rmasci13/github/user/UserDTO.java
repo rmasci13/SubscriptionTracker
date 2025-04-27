@@ -4,7 +4,7 @@ import com.rmasci13.github.subscription.SubscriptionDTO;
 
 import java.util.List;
 
-public record UserDTO(Integer id, String username, String email, List<SubscriptionDTO> subscriptions) {
+public record UserDTO(String username, String email, List<SubscriptionDTO> subscriptions) {
     public boolean hasUsername() {
         return username != null && !username.isEmpty();
     }

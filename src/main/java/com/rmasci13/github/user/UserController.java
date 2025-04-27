@@ -1,22 +1,19 @@
 package com.rmasci13.github.user;
 
-import com.rmasci13.github.subscription.SubscriptionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(path="/api/user")
 public class UserController {
+
     private final UserService userService;
 
     @Autowired
@@ -38,18 +35,10 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("me")
-    public ResponseEntity<UserDTO> getCurrentUser(Principal principal) {
-        String username = principal.getName();
-        UserDTO user = userService.getUserByUsername(username);
-        return ResponseEntity.ok(user);
-    }
-
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserRequestDTO user) {
         UserDTO created = userService.createUser(user);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(created.id()).toUri();
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping(path="{id}")

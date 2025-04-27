@@ -23,6 +23,13 @@ public class TemplateController {
         return "index";
     }
 
+    @GetMapping("signup")
+    public String getSignupView() {
+        return "signup";
+    }
+
+
+
 //    @GetMapping("index")
 //    public String getIndexView(Model model, Authentication auth) {
 //        User loggedUser = (User) auth.getPrincipal();
