@@ -10,6 +10,14 @@ public class Main {
     }
 }
 
+
+/*
+TO DO:
+-More commenting
+-Tests
+-Edit/Delete/Add Subscription functionality for user
+ */
+
 //Turn on docker with: docker-compose up -d
 //Get into SQL bash with: docker exec -it postgres bash
 //Then do:                psql -U rmasci13

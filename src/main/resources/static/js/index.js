@@ -2,20 +2,24 @@ document.addEventListener("DOMContentLoaded", function() {
     createTable();
 });
 
+// Function to populate user's subscription table
 function createTable() {
     const contentArea = document.querySelector('.content');
+    // API fetch call to publicly accessible route, though only for the current user's DTO
     fetch('/public/api/user/me')
+        // Get response from API call, if ok turn into JSON
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.json();
         })
+        // Take the JSON, extract the subscription array into a variable
         .then(userData => {
             console.log(userData);
             const subscriptions = userData.subscriptions;
             console.log(subscriptions);
-            // Create and append the table
+            // Create the table
             const table = document.createElement('table');
             table.className = 'table table-dark';
 
@@ -34,6 +38,7 @@ function createTable() {
                     <th>Actions</th>
                 </tr>
             `;
+            // Append table header
             table.appendChild(thead);
 
             // Create table body
@@ -58,7 +63,7 @@ function createTable() {
                 `;
                 tbody.appendChild(row);
             });
-            //Create blank row to add new subscription TO DO
+            // Create blank row to add new subscription TO DO
             const addRow = document.createElement('tr');
             addRow.innerHTML = `
                     <td>Blank</td>
@@ -73,9 +78,12 @@ function createTable() {
                         <button class="btn btn-success" type="submit">Submit</button>
                     </td>
                 `;
+            // Append the table body to the table
             table.appendChild(tbody);
+            // Append the table itself to the content area div
             contentArea.appendChild(table);
         })
+        // Catch if error occurred in retrieving user data
         .catch(error => {
             console.error('Error fetching user data:', error);
             contentArea.innerHTML = '<p>Error loading subscription data</p>';

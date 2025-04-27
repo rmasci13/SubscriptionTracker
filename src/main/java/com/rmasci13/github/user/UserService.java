@@ -53,18 +53,24 @@ public class UserService implements UserDetailsService {
         return mapToUserDTO(user);
     }
 
-    //Create a new User
+    //Get User by Username, required by UserDetailsService
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found:" + username));
+    }
+
+    //Create a new User, for POST requests
     public UserDTO createUser(UserRequestDTO userRequestDTO) {
         Optional<User> userOptional = userRepository.findByUsername(userRequestDTO.username());
         if (userOptional.isPresent()) {
             throw new ForbiddenException("User with username " + userRequestDTO.username() + " already exists");
         }
-        User user = mapToUser(userRequestDTO);
+        User user = mapUserRequestDTOToUserEnt(userRequestDTO);
         User created = userRepository.save(user);
         return mapToUserDTO(created);
     }
 
-    //Update user
+    //Update user, for PUT requests
     public UserDTO updateUser(@PathVariable Integer id, UserRequestDTO userRequestDTO) {
         User user = findByUserId(id);
         if (userRequestDTO.hasUsername()) {
@@ -80,12 +86,13 @@ public class UserService implements UserDetailsService {
         return mapToUserDTO(user);
     }
 
-    //Delete user
+    //Delete user, for DELETE requests
     public void deleteUser(@PathVariable Integer id) {
         User user = findByUserId(id);
         userRepository.delete(user);
     }
 
+//------------------------------------------------------------------------PRIVATE HELPER METHODS------------------------------------------------------------------------
 
     //Private helper converting User to UserDTO,
     //utilizing private helper converting Subscription to SubscriptionDTO
@@ -93,7 +100,7 @@ public class UserService implements UserDetailsService {
         List<SubscriptionDTO> subscriptionDTOs;
         if (user.getSubscriptions() != null) {
             subscriptionDTOs = user.getSubscriptions().stream()
-                    .map(this::mapToSubscriptionDTO)
+                    .map(this::mapSubEntToSubDTO)
                     .toList();
         }
         else {
@@ -102,13 +109,14 @@ public class UserService implements UserDetailsService {
         return new UserDTO(user.getUsername(), user.getEmail(), subscriptionDTOs);
     }
 
-    //Private helper converting Subscription to SubscriptionDTO
-    private SubscriptionDTO mapToSubscriptionDTO(Subscription subscription) {
+    //Convert Subscription to SubscriptionDTO
+    private SubscriptionDTO mapSubEntToSubDTO(Subscription subscription) {
         LocalDate nextRenewalDate = subscriptionService.calculateNextRenewalDate(subscription);
         return new SubscriptionDTO(subscription, nextRenewalDate);
     }
 
-    private User mapToUser(UserRequestDTO userRequestDTO) {
+    //Convert UserRequestDTO to a User, used in creation of new User
+    private User mapUserRequestDTOToUserEnt(UserRequestDTO userRequestDTO) {
         User user = new User();
         user.setUsername(userRequestDTO.username());
         user.setEmail(userRequestDTO.email());
@@ -116,16 +124,13 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    //Find a User by a given ID
     private User findByUserId(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
     }
 
+    //Find a User by a given username
     private User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username));
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found:" + username));
     }
 }
