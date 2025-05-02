@@ -14,7 +14,6 @@ Subscription Tracker is a web application that allows users to track their vario
 - **Categories**: Organize subscriptions by predefined categories
 - **Payment Methods**: Track which payment method is used for each subscription
 - **Multi-User Support**: Each user maintains their own subscription list
-- **Responsive Web Interface**: Access your subscriptions from any device
 
 ## Technologies
 
@@ -32,39 +31,6 @@ Subscription Tracker is a web application that allows users to track their vario
 - **Build Tool**:
   - Maven
 
-## Prerequisites
-
-- JDK 17 or higher
-- Maven 3.6+
-- Database (configured in application.yml)
-
-## Installation & Setup
-
-1. Clone the repository:
-```bash
-git clone https://github.com/rmasci13/SubscriptionTracker.git
-cd SubscriptionTracker
-```
-
-2. Configure your database connection in `src/main/resources/application.yml`
-
-3. Build the application:
-```bash
-mvn clean package
-```
-
-4. Run the application:
-```bash
-java -jar target/subscription-tracker-0.0.1-SNAPSHOT.jar
-```
-
-Alternatively, you can run it directly using Maven:
-```bash
-mvn spring-boot:run
-```
-
-5. Access the application at `http://localhost:8080`
-
 ## Default User
 
 For development convenience, the application creates a default admin user on startup:
@@ -80,23 +46,24 @@ The password is regenerated each time the application starts if no admin user ex
 - Username
 - Email
 - Password (encrypted)
-- List of subscriptions
-- User roles for access control
+- List of Subscriptions
+- User Roles
 
 ### Subscription
-- Unique identifier
+- Unique ID
 - Service name
 - Cost
-- Billing cycle (e.g., MONTHLY, YEARLY)
-- Last payment date
-- Category (e.g., ENTERTAINMENT, UTILITIES, STREAMING)
-- Payment method (e.g., CREDIT_CARD, PAYPAL, BANK_TRANSFER)
-- Associated user
+- Billing cycle (MONTHLY, QUARTERLY, SEMI-ANNUALLY, ANNUALLY)
+- Last Payment Date
+- Next Renewal Date
+- Category (ENTERTAINMENT, UTILITIES, STREAMING, etc.)
+- Payment Method Description
+- Status
+- Associated User
 
 ### Enums
 - **BillingCycle**: Defines the frequency of subscription payments
 - **Category**: Organizes subscriptions by type
-- **PaymentMethod**: Specifies how each subscription is paid
 
 ## Security
 
@@ -107,8 +74,3 @@ The application implements Spring Security with:
 - CSRF protection (disabled for API testing with Postman)
 - Remember-me functionality
 - Custom login page
-
-
-## Acknowledgments
-
-- Built with Spring Boot and Spring Security
