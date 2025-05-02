@@ -22,6 +22,7 @@ public class SubscriptionController {
         this.subscriptionService = subscriptionService;
     }
 
+    // Get all Subscriptions
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SubscriptionDTO>> getSubscriptions() {
@@ -29,6 +30,7 @@ public class SubscriptionController {
         return ResponseEntity.ok(dtos);
     }
 
+    // Get a single subscription by Subscription ID
     @GetMapping(path="{id}")
     @PreAuthorize("hasRole('ADMIN') or @subscriptionService.isOwner(authentication.principal.id, #id)")
     public ResponseEntity<SubscriptionDTO> getSubscription(@PathVariable Integer id) {
@@ -36,6 +38,7 @@ public class SubscriptionController {
         return ResponseEntity.ok(dto);
     }
 
+    // Create a new Subscription
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or #dto.userID == authentication.principal.id")
     public ResponseEntity<SubscriptionDTO> createSubscription(@RequestBody SubscriptionDTO dto) {
@@ -44,6 +47,7 @@ public class SubscriptionController {
         return ResponseEntity.created(location).body(created);
     }
 
+    // Edit a current Subscription
     @PutMapping(path="{id}")
     @PreAuthorize("hasRole('ADMIN') or @subscriptionService.isOwner(authentication.principal.id, #id)")
     public ResponseEntity<SubscriptionDTO> updateSubscription(@PathVariable Integer id, @RequestBody SubscriptionDTO dto) {
@@ -51,6 +55,7 @@ public class SubscriptionController {
         return ResponseEntity.ok(updatedDTO);
     }
 
+    //Delete a Subscription
     @DeleteMapping(path="{id}")
     @PreAuthorize("hasRole('ADMIN') or @subscriptionService.isOwner(authentication.principal.id, #id)")
     public ResponseEntity<Void> deleteSubscription(@PathVariable Integer id) {

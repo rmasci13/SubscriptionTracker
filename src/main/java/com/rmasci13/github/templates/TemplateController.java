@@ -1,13 +1,14 @@
 package com.rmasci13.github.templates;
 
-import com.rmasci13.github.user.User;
-import com.rmasci13.github.user.UserDTO;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.rmasci13.github.enums.BillingCycle;
+import com.rmasci13.github.enums.Category;
+import com.rmasci13.github.enums.Status;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.ui.Model;
+
+import java.util.Arrays;
 
 @Controller
 @RequestMapping("/")
@@ -19,7 +20,16 @@ public class TemplateController {
     }
 
     @GetMapping("index")
-    public String getIndexView() {
+    public String getIndexView(Model model) {
+        model.addAttribute("categories", Arrays.stream(Category.values())
+                .map(Enum::name)
+                .toList());
+        model.addAttribute("statuses", Arrays.stream(Status.values())
+                .map(Enum::name)
+                .toList());
+        model.addAttribute("billingCycles", Arrays.stream(BillingCycle.values())
+                .map(Enum::name)
+                .toList());
         return "index";
     }
 

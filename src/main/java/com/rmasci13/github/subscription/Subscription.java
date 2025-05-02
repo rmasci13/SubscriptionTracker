@@ -5,7 +5,6 @@ import com.rmasci13.github.enums.Category;
 import com.rmasci13.github.enums.Status;
 import com.rmasci13.github.user.User;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.Objects;
 

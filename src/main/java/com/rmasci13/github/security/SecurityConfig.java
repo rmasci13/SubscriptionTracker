@@ -50,6 +50,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Create an Admin User for ease of Postman setup and testing
     @Bean
     public CommandLineRunner setupDefaultUser(UserRepository userRepository) {
         return args -> {

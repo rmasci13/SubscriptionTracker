@@ -116,14 +116,17 @@ public class SubscriptionService {
         };
     }
 
+    // Find a Subscription given SubscriptionID passed in by Controller
     private Subscription findBySubscriptionId(Integer id) {
         return subscriptionRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Subscription not found with ID: " + id));
     }
 
+    // Find a User given UserID passed in by the Controller
     private User findByUserId(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
     }
 
+    // Boolean to check that Subscription belongs to the intended User
     public boolean isOwner(Integer userId, Integer subscriptionId) {
         Subscription subscription = findBySubscriptionId(subscriptionId);
         return userId.equals(subscription.getUser().getId());

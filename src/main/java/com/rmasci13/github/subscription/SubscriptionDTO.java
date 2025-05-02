@@ -3,7 +3,6 @@ package com.rmasci13.github.subscription;
 import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.Category;
 import com.rmasci13.github.enums.Status;
-
 import java.time.LocalDate;
 
 public class SubscriptionDTO {

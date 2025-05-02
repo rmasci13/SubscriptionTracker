@@ -16,9 +16,7 @@ function createTable() {
         })
         // Take the JSON, extract the subscription array into a variable
         .then(userData => {
-            console.log(userData);
             const subscriptions = userData.subscriptions;
-            console.log(subscriptions);
             // Create the table
             const table = document.createElement('table');
             table.className = 'table table-dark';
@@ -63,21 +61,53 @@ function createTable() {
                 `;
                 tbody.appendChild(row);
             });
-            // Create blank row to add new subscription TO DO
+            // Create blank row to add new subscription
+            const categories = window.appData.categories;
+            console.log(categories);
+            const statuses = window.appData.status;
+            console.log(statuses);
+            const billingCycles = window.appData.billingCycles;
+            console.log(billingCycles);
             const addRow = document.createElement('tr');
             addRow.innerHTML = `
-                    <td>Blank</td>
-                    <td>Blank</td>
-                    <td>Blank</td>
-                    <td>Blank</td>
-                    <td>Blank</td>
-                    <td>Blank</td>
-                    <td>Blank</td>
-                    <td>Blank</td>
+                    <td><input type="string"></td>
+                    <td><select name="Categories"></select></td>
+                    <td><input type="number" style="width:50px"></td>
+                    <td><select name="Billing-Cycle"></select></td>
+                    <td><input type="date"></td>
+                    <td></td>
+                    <td><input type="string"></td>
+                    <td><select name="Status"></select></td>
                     <td>
                         <button class="btn btn-success" type="submit">Submit</button>
                     </td>
                 `;
+            tbody.append(addRow);
+            // Create and append options for Category select
+            const categorySelect = addRow.querySelector('[name="Categories"]');
+            categories.forEach(category => {
+                console.log(category);
+                const newOption = document.createElement("option");
+                newOption.value = category;
+                newOption.textContent = category;
+                categorySelect.appendChild(newOption);
+            });
+            // Create and append options for Billing Cycle select
+            const billingCycleSelect = addRow.querySelector('[name="Billing-Cycle"]');
+            billingCycles.forEach(billingCycle => {
+                const newOption = document.createElement("option");
+                newOption.value = billingCycle;
+                newOption.textContent = billingCycle;
+                billingCycleSelect.appendChild(newOption);
+            });
+            // Create and append options for Status select
+            const statusSelect = addRow.querySelector('[name="Status"]');
+            statuses.forEach(status => {
+                const newOption = document.createElement("option");
+                newOption.value = status;
+                newOption.textContent = status;
+                statusSelect.appendChild(newOption);
+            });
             // Append the table body to the table
             table.appendChild(tbody);
             // Append the table itself to the content area div
