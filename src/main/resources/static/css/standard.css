@@ -28,12 +28,6 @@ h2 {
     box-sizing: border-box;
 }
 
-@media (min-width: 800px) {
-    .content {
-        max-width: 760px;
-    }
-}
-
 .v-middle {
     vertical-align: middle;
 }
@@ -121,9 +115,9 @@ button.small {
     overflow: hidden;
 }
 
-table {
+.my-table {
     width: 100%;
-    max-width: 100%;
+    max-width: 1370px;
     margin-bottom: 2rem;
     border-collapse: collapse;
     margin-left: auto;

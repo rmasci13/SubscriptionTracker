@@ -20,16 +20,7 @@ public class TemplateController {
     }
 
     @GetMapping("index")
-    public String getIndexView(Model model) {
-        model.addAttribute("categories", Arrays.stream(Category.values())
-                .map(Enum::name)
-                .toList());
-        model.addAttribute("statuses", Arrays.stream(Status.values())
-                .map(Enum::name)
-                .toList());
-        model.addAttribute("billingCycles", Arrays.stream(BillingCycle.values())
-                .map(Enum::name)
-                .toList());
+    public String getIndexView() {
         return "index";
     }
 

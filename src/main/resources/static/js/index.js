@@ -19,7 +19,7 @@ function createTable() {
             const subscriptions = userData.subscriptions;
             // Create the table
             const table = document.createElement('table');
-            table.className = 'table table-dark';
+            table.className = 'table table-dark my-table';
 
             // Create table header
             const thead = document.createElement('thead');
@@ -62,17 +62,11 @@ function createTable() {
                 tbody.appendChild(row);
             });
             // Create blank row to add new subscription
-            const categories = window.appData.categories;
-            console.log(categories);
-            const statuses = window.appData.status;
-            console.log(statuses);
-            const billingCycles = window.appData.billingCycles;
-            console.log(billingCycles);
             const addRow = document.createElement('tr');
             addRow.innerHTML = `
                     <td><input type="string"></td>
                     <td><select name="Categories"></select></td>
-                    <td><input type="number" style="width:50px"></td>
+                    <td>$<input type="number" style="width:65px"></td>
                     <td><select name="Billing-Cycle"></select></td>
                     <td><input type="date"></td>
                     <td></td>
@@ -83,31 +77,8 @@ function createTable() {
                     </td>
                 `;
             tbody.append(addRow);
-            // Create and append options for Category select
-            const categorySelect = addRow.querySelector('[name="Categories"]');
-            categories.forEach(category => {
-                console.log(category);
-                const newOption = document.createElement("option");
-                newOption.value = category;
-                newOption.textContent = category;
-                categorySelect.appendChild(newOption);
-            });
-            // Create and append options for Billing Cycle select
-            const billingCycleSelect = addRow.querySelector('[name="Billing-Cycle"]');
-            billingCycles.forEach(billingCycle => {
-                const newOption = document.createElement("option");
-                newOption.value = billingCycle;
-                newOption.textContent = billingCycle;
-                billingCycleSelect.appendChild(newOption);
-            });
-            // Create and append options for Status select
-            const statusSelect = addRow.querySelector('[name="Status"]');
-            statuses.forEach(status => {
-                const newOption = document.createElement("option");
-                newOption.value = status;
-                newOption.textContent = status;
-                statusSelect.appendChild(newOption);
-            });
+            // Fetch enums and populate the selects with options
+            fetchAndPopulateEnums();
             // Append the table body to the table
             table.appendChild(tbody);
             // Append the table itself to the content area div
@@ -118,4 +89,31 @@ function createTable() {
             console.error('Error fetching user data:', error);
             contentArea.innerHTML = '<p>Error loading subscription data</p>';
         });
+}
+
+// Function to fetch the enums. Calls populate selects function for each select
+function fetchAndPopulateEnums() {
+    fetch('public/api/enum')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok')
+            }
+            return response.json();
+        })
+        .then(enums => {
+            populateSelect('[name="Categories"]', enums.categories);
+            populateSelect('[name="Billing-Cycle"]', enums.billingCycles);
+            populateSelect('[name="Status"]', enums.statuses);
+        })
+}
+
+// Function to populate the select dropdowns
+function populateSelect(selectId, values) {
+    const select = document.querySelector(selectId);
+    values.forEach(val => {
+        const option = document.createElement('option');
+        option.value = val;
+        option.textContent = val;
+        select.appendChild(option);
+    })
 }
