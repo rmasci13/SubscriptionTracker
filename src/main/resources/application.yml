@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5332/subscription
+    url: jdbc:postgresql://db:5432/subscription
     username: rmasci13
     password: password
   jpa:
