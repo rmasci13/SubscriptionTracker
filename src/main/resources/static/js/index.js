@@ -50,9 +50,9 @@ function createTable() {
                     <td>${sub.category}</td>
                     <td>$${sub.cost}</td>
                     <td>${sub.billingCycle}</td>
-                    <td>${sub.lastPaymentDate}</td>
-                    <td>${sub.nextRenewalDate}</td>
-                    <td>${sub.paymentMethod}</td>
+                    <td class="date">${sub.lastPaymentDate}</td>
+                    <td class="date">${sub.nextRenewalDate}</td>
+                    <td class="paymentMethod">${sub.paymentMethod}</td>
                     <td>${sub.status}</td>
                     <td>
                         <button class="btn btn-info" data-id="${sub.id}">Edit</button>
@@ -66,11 +66,11 @@ function createTable() {
             addRow.innerHTML = `
                     <td><input type="string"></td>
                     <td><select name="Categories"></select></td>
-                    <td>$<input type="number" style="width:65px"></td>
+                    <td>$<input type="number" style="width:60px"></td>
                     <td><select name="Billing-Cycle"></select></td>
-                    <td><input type="date"></td>
-                    <td></td>
-                    <td><input type="string"></td>
+                    <td class="date"><input type="date"></td>
+                    <td class="date"></td>
+                    <td class="paymentMethod"><input type="string"></td>
                     <td><select name="Status"></select></td>
                     <td>
                         <button class="btn btn-success" type="submit">Submit</button>

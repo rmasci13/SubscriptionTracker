@@ -19,6 +19,22 @@ h2 {
     line-height: 2rem;
 }
 
+.paymentMethod {
+    width: 110px;
+}
+
+.paymentMethod input {
+    width: 110px;
+}
+
+.date {
+    width: 130px;
+}
+
+.date input {
+    width: 130px;
+}
+
 .content {
     margin-right: auto;
     margin-left: auto;
@@ -69,6 +85,8 @@ button {
     border-radius: 0.1rem;
     width: 100%;
     cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 button.primary {
