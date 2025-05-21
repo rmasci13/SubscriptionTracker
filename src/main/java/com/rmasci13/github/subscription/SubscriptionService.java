@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,9 +43,9 @@ public class SubscriptionService {
         return new SubscriptionDTO(subscription, nextRenewalDate);
     }
 
-    //Create new subscription
-    public SubscriptionDTO createSubscription(SubscriptionDTO dto) {
-        User user = findByUserId(dto.getUserID());
+    //Create new subscription with username
+    public SubscriptionDTO createSubscriptionWithUsername(SubscriptionRequestDTO dto, String username) {
+        User user = findByUsername(username);
         Subscription subscription = mapToSubscription(dto, user);
         Subscription saved = subscriptionRepository.save(subscription);
         return convertToDTO(saved);
@@ -84,15 +85,15 @@ public class SubscriptionService {
 //Business Logic Methods
 
     //Convert SubscriptionDTO to Subscription
-    private Subscription mapToSubscription(SubscriptionDTO dto, User user) {
+    private Subscription mapToSubscription(SubscriptionRequestDTO dto, User user) {
         Subscription subscription = new Subscription();
-        subscription.setServiceName(dto.getServiceName());
-        subscription.setCost(dto.getCost());
-        subscription.setBillingCycle(dto.getBillingCycle());
-        subscription.setLastPaymentDate(dto.getLastPaymentDate());
-        subscription.setCategory(dto.getCategory());
-        subscription.setPaymentMethod(dto.getPaymentMethod());
-        subscription.setStatus(dto.getStatus());
+        subscription.setServiceName(dto.serviceName());
+        subscription.setCost(dto.cost());
+        subscription.setBillingCycle(dto.billingCycle());
+        subscription.setLastPaymentDate(dto.lastPaymentDate());
+        subscription.setCategory(dto.category());
+        subscription.setPaymentMethod(dto.paymentMethod());
+        subscription.setStatus(dto.status());
         subscription.setUser(user);
         return subscription;
     }
@@ -124,6 +125,15 @@ public class SubscriptionService {
     // Find a User given UserID passed in by the Controller
     private User findByUserId(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
+    }
+
+    // Find a User given Username passed in by the Controller
+    private User findByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
+            throw new ItemNotFoundException("User not found with username: " + username);
+        }
+        return optionalUser.get();
     }
 
     // Boolean to check that Subscription belongs to the intended User

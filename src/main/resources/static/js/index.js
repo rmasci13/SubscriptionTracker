@@ -64,18 +64,31 @@ function createTable() {
             // Create blank row to add new subscription
             const addRow = document.createElement('tr');
             addRow.innerHTML = `
-                    <td><input type="string"></td>
-                    <td><select name="Categories"></select></td>
-                    <td>$<input type="number" style="width:60px"></td>
-                    <td><select name="Billing-Cycle"></select></td>
-                    <td class="date"><input type="date"></td>
+                    <td><input id="serviceName" type="string"></td>
+                    <td><select id="category" name="Categories"></select></td>
+                    <td>$<input id="cost" type="number" style="width:60px"></td>
+                    <td><select id="billingCycle" name="Billing-Cycle"></select></td>
+                    <td class="date"><input id="lastPayment" type="date"></td>
                     <td class="date"></td>
-                    <td class="paymentMethod"><input type="string"></td>
-                    <td><select name="Status"></select></td>
+                    <td class="paymentMethod"><input id="paymentMethod" type="string"></td>
+                    <td><select id="status" name="Status"></select></td>
                     <td>
                         <button class="btn btn-success" type="submit">Submit</button>
                     </td>
                 `;
+            const addSubmit = addRow.querySelector('button')
+            const newSubscriptionRequestDTO = {
+                serviceName: document.getElementById('serviceName').value,
+                cost: document.getElementById('cost').value,
+                BillingCycle: document.getElementById('billingCycle').value,
+                lastPaymentDate: document.getElementById('lastPayment').value,
+                category: document.getElementById('category').value,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                status: document.getElementById('status').value
+            }
+            addSubmit.addEventListener('click', (event) => {
+                handleSubmit(event, newSubscriptionRequestDTO)
+            })
             tbody.append(addRow);
             // Fetch enums and populate the selects with options
             fetchAndPopulateEnums();
@@ -116,4 +129,24 @@ function populateSelect(selectId, values) {
         option.textContent = val;
         select.appendChild(option);
     })
+}
+
+async function handleSubmit(event, newSubscriptionRequestDTO) {
+    event.preventDefault()
+
+    fetch('/public/api/subscription', {
+        method: 'POST',
+        body: JSON.stringify(newSubscriptionRequestDTO)
+    })
+        .then(response => {
+            return response.json()
+        })
+        .then(data => {
+            console.log("Subscription successfully created", data)
+            window.location.href= "/index"
+        })
+        .catch(error => {
+            console.error('New Subscription failed', error)
+            alert('New Subscription failed: ' + error.message)
+        })
 }

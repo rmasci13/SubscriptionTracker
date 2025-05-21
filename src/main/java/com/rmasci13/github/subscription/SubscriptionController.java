@@ -5,6 +5,8 @@ import com.rmasci13.github.enums.PaymentMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -39,13 +41,12 @@ public class SubscriptionController {
     }
 
     // Create a new Subscription
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or #dto.userID == authentication.principal.id")
-    public ResponseEntity<SubscriptionDTO> createSubscription(@RequestBody SubscriptionDTO dto) {
-        SubscriptionDTO created = subscriptionService.createSubscription(dto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(location).body(created);
-    }
+//    @PostMapping
+//    public ResponseEntity<SubscriptionDTO> createSubscription(@RequestBody SubscriptionDTO dto) {
+//        SubscriptionDTO created = subscriptionService.createSubscription(dto);
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(created.getId()).toUri();
+//        return ResponseEntity.created(location).body(created);
+//    }
 
     // Edit a current Subscription
     @PutMapping(path="{id}")
