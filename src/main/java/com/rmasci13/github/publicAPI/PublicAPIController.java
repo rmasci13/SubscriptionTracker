@@ -14,7 +14,7 @@ import java.security.Principal;
 
 
 @RestController
-@RequestMapping(path="/public/api/")
+@RequestMapping(path="/public/api")
 public class PublicAPIController {
 
     private final UserService userService;

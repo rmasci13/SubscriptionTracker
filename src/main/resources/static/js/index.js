@@ -62,31 +62,33 @@ function createTable() {
                 tbody.appendChild(row);
             });
             // Create blank row to add new subscription
-            const addRow = document.createElement('tr');
+            const addRow = document.createElement('tr')
+            addRow.className = "addRow"
             addRow.innerHTML = `
-                    <td><input id="serviceName" type="string"></td>
-                    <td><select id="category" name="Categories"></select></td>
-                    <td>$<input id="cost" type="number" style="width:60px"></td>
-                    <td><select id="billingCycle" name="Billing-Cycle"></select></td>
-                    <td class="date"><input id="lastPayment" type="date"></td>
+                    <td><input class="serviceNameData" type="string"></td>
+                    <td><select class="categoryData" name="Categories"></select></td>
+                    <td>$<input class="costData" type="number" style="width:60px"></td>
+                    <td><select class="billingCycleData" name="Billing-Cycle"></select></td>
+                    <td class="date"><input class="lastPaymentData" type="date"></td>
                     <td class="date"></td>
-                    <td class="paymentMethod"><input id="paymentMethod" type="string"></td>
-                    <td><select id="status" name="Status"></select></td>
+                    <td class="paymentMethod"><input class="paymentMethodData" type="string"></td>
+                    <td><select class="statusData" name="Status"></select></td>
                     <td>
                         <button class="btn btn-success" type="submit">Submit</button>
                     </td>
                 `;
             const addSubmit = addRow.querySelector('button')
-            const newSubscriptionRequestDTO = {
-                serviceName: document.getElementById('serviceName').value,
-                cost: document.getElementById('cost').value,
-                BillingCycle: document.getElementById('billingCycle').value,
-                lastPaymentDate: document.getElementById('lastPayment').value,
-                category: document.getElementById('category').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                status: document.getElementById('status').value
-            }
+
             addSubmit.addEventListener('click', (event) => {
+                const newSubscriptionRequestDTO = {
+                    serviceName: addRow.querySelector('.serviceNameData').value,
+                    cost: addRow.querySelector('.costData').value,
+                    billingCycle: addRow.querySelector('.billingCycleData').value,
+                    lastPaymentDate: addRow.querySelector('.lastPaymentData').value,
+                    category: addRow.querySelector('.categoryData').value,
+                    paymentMethod: addRow.querySelector('.paymentMethodData').value,
+                    status: addRow.querySelector('.statusData').value
+                }
                 handleSubmit(event, newSubscriptionRequestDTO)
             })
             tbody.append(addRow);
@@ -136,9 +138,13 @@ async function handleSubmit(event, newSubscriptionRequestDTO) {
 
     fetch('/public/api/subscription', {
         method: 'POST',
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newSubscriptionRequestDTO)
     })
         .then(response => {
+            if (!response.ok) {
+                throw new Error("Error in subscription creation")
+            }
             return response.json()
         })
         .then(data => {

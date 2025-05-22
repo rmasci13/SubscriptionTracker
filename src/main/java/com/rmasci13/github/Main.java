@@ -13,7 +13,6 @@ public class Main {
 
 /*
 TO DO:
--More commenting
 -Tests
 -Edit/Delete/Add Subscription functionality for user
  */
