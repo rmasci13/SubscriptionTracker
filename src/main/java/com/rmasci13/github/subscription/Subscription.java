@@ -32,11 +32,10 @@ public class Subscription {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Subscription(Integer id, String serviceName,
+    public Subscription(String serviceName,
                         double cost, BillingCycle billingCycle,
                         LocalDate lastPaymentDate, Category category,
                         String paymentMethod, User user, Status status) {
-        this.id = id;
         this.serviceName = serviceName;
         this.cost = cost;
         this.billingCycle = billingCycle;

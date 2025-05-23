@@ -1,17 +1,14 @@
 package com.rmasci13.github.subscription;
 
 import com.rmasci13.github.enums.BillingCycle;
-import com.rmasci13.github.exception.ForbiddenException;
 import com.rmasci13.github.exception.ItemNotFoundException;
 import com.rmasci13.github.user.User;
 import com.rmasci13.github.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -85,7 +82,7 @@ public class SubscriptionService {
 //Business Logic Methods
 
     //Convert SubscriptionDTO to Subscription
-    private Subscription mapToSubscription(SubscriptionRequestDTO dto, User user) {
+    public Subscription mapToSubscription(SubscriptionRequestDTO dto, User user) {
         Subscription subscription = new Subscription();
         subscription.setServiceName(dto.serviceName());
         subscription.setCost(dto.cost());
@@ -118,17 +115,17 @@ public class SubscriptionService {
     }
 
     // Find a Subscription given SubscriptionID passed in by Controller
-    private Subscription findBySubscriptionId(Integer id) {
+    public Subscription findBySubscriptionId(Integer id) {
         return subscriptionRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Subscription not found with ID: " + id));
     }
 
     // Find a User given UserID passed in by the Controller
-    private User findByUserId(Integer id) {
+    public User findByUserId(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
     }
 
     // Find a User given Username passed in by the Controller
-    private User findByUsername(String username) {
+    public User findByUsername(String username) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             throw new ItemNotFoundException("User not found with username: " + username);

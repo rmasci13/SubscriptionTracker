@@ -4,6 +4,7 @@ import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.Category;
 import com.rmasci13.github.enums.Status;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class SubscriptionDTO {
     private Integer id;
@@ -123,4 +124,16 @@ public class SubscriptionDTO {
     public boolean hasCost() { return cost != null; }
 
     public boolean hasStatus() { return status != null; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        SubscriptionDTO that = (SubscriptionDTO) o;
+        return Objects.equals(id, that.id) && Objects.equals(serviceName, that.serviceName) && Objects.equals(cost, that.cost) && billingCycle == that.billingCycle && Objects.equals(lastPaymentDate, that.lastPaymentDate) && Objects.equals(nextRenewalDate, that.nextRenewalDate) && category == that.category && Objects.equals(paymentMethod, that.paymentMethod) && status == that.status && Objects.equals(userID, that.userID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, serviceName, cost, billingCycle, lastPaymentDate, nextRenewalDate, category, paymentMethod, status, userID);
+    }
 }
