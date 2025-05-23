@@ -26,6 +26,7 @@ TO DO:
 
 //Can go into Maven tab, install to create the jar
 //Then cd into target, then java -jar SubscriptionTracker-0.0.1-SNAPSHOT.jar <--server.port=<number>>
+//docker-compose up --build runs the program in docker container
 //Allows you to create multiple instances of it, and therefore specify ports
 
 //To use Postman with Form Login:

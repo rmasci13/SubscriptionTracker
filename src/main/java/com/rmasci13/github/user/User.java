@@ -38,8 +38,7 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
-    public User(Integer id, String username, String email, String password) {
-        this.id = id;
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -47,7 +46,10 @@ public class User implements UserDetails {
         roles.add("ROLE_USER");
     }
 
-    public User() {}
+    public User() {
+        subscriptions = new ArrayList<>();
+        roles.add("ROLE_USER");
+    }
 
     public Integer getId() {
         return id;
