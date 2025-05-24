@@ -16,5 +16,25 @@ public record SubscriptionRequestDTO(
         String paymentMethod,
         Status status
 ) {
-
+    public boolean hasServiceName() {
+        return serviceName != null;
+    }
+    public boolean hasCost() {
+        return cost != null;
+    }
+    public boolean hasBillingCycle() {
+        return billingCycle != null;
+    }
+    public boolean hasLastPaymentDate() {
+        return lastPaymentDate != null;
+    }
+    public boolean hasCategory() {
+        return category != null;
+    }
+    public boolean hasPaymentMethod() {
+        return paymentMethod != null;
+    }
+    public boolean hasStatus() {
+        return status != null;
+    }
 }

@@ -50,28 +50,42 @@ public class SubscriptionService {
 
     //Update subscription
     @Transactional
-    public SubscriptionDTO updateSubscription(Integer id, SubscriptionDTO dto) {
+    public SubscriptionDTO updateSubscription(Integer id, SubscriptionRequestDTO dto) {
+        boolean thereWasAnUpdate = false;
         Subscription currentSubscription = findBySubscriptionId(id);
-        if (dto.hasBillingCycle()) {
-            currentSubscription.setBillingCycle(dto.getBillingCycle());
+        if (dto.hasServiceName() && !dto.serviceName().equals(currentSubscription.getServiceName())) {
+            thereWasAnUpdate = true;
+            currentSubscription.setServiceName(dto.serviceName());
         }
-        if (dto.hasLastPaymentDate()) {
-            currentSubscription.setLastPaymentDate(dto.getLastPaymentDate());
+        if (dto.hasBillingCycle() && dto.billingCycle() != currentSubscription.getBillingCycle()) {
+            thereWasAnUpdate = true;
+            currentSubscription.setBillingCycle(dto.billingCycle());
         }
-        if (dto.hasCategory()) {
-            currentSubscription.setCategory(dto.getCategory());
+        if (dto.hasLastPaymentDate() && !dto.lastPaymentDate().equals(currentSubscription.getLastPaymentDate())) {
+            thereWasAnUpdate = true;
+            currentSubscription.setLastPaymentDate(dto.lastPaymentDate());
         }
-        if (dto.hasCost()) {
-            currentSubscription.setCost(dto.getCost());
+        if (dto.hasCategory() && dto.category() != currentSubscription.getCategory()) {
+            thereWasAnUpdate = true;
+            currentSubscription.setCategory(dto.category());
         }
-        if (dto.hasPaymentMethod()) {
-            currentSubscription.setPaymentMethod(dto.getPaymentMethod());
+        if (dto.hasCost() && dto.cost() != currentSubscription.getCost()) {
+            thereWasAnUpdate = true;
+            currentSubscription.setCost(dto.cost());
         }
-        if (dto.hasStatus()) {
-            currentSubscription.setStatus(dto.getStatus());
+        if (dto.hasPaymentMethod() && !dto.paymentMethod().equals(currentSubscription.getPaymentMethod())) {
+            thereWasAnUpdate = true;
+            currentSubscription.setPaymentMethod(dto.paymentMethod());
         }
-        Subscription saved = subscriptionRepository.save(currentSubscription);
-        return convertToDTO(saved);
+        if (dto.hasStatus() && dto.status() != currentSubscription.getStatus()) {
+            thereWasAnUpdate = true;
+            currentSubscription.setStatus(dto.status());
+        }
+        if (thereWasAnUpdate) {
+            Subscription saved = subscriptionRepository.save(currentSubscription);
+            return convertToDTO(saved);
+        }
+        return convertToDTO(currentSubscription);
     }
 
     public void deleteSubscription(Integer id) {

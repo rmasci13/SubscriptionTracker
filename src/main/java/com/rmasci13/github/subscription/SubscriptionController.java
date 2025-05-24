@@ -51,7 +51,7 @@ public class SubscriptionController {
     // Edit a current Subscription
     @PutMapping(path="{id}")
     @PreAuthorize("hasRole('ADMIN') or @subscriptionService.isOwner(authentication.principal.id, #id)")
-    public ResponseEntity<SubscriptionDTO> updateSubscription(@PathVariable Integer id, @RequestBody SubscriptionDTO dto) {
+    public ResponseEntity<SubscriptionDTO> updateSubscription(@PathVariable Integer id, @RequestBody SubscriptionRequestDTO dto) {
         SubscriptionDTO updatedDTO = subscriptionService.updateSubscription(id, dto);
         return ResponseEntity.ok(updatedDTO);
     }

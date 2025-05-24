@@ -8,12 +8,12 @@ import com.rmasci13.github.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,12 +26,9 @@ class SubscriptionServiceTest {
     SubscriptionRepository subscriptionRepository;
     @Mock
     UserRepository userRepository;
+    @Spy
+    @InjectMocks
     private SubscriptionService underTest;
-
-    @BeforeEach
-    void setUp() {
-        underTest = new SubscriptionService(subscriptionRepository, userRepository);
-    }
 
     @Test
     void testIsOwner_True() {
@@ -262,21 +259,333 @@ class SubscriptionServiceTest {
 
     @Test
     void canGetSubscriptionDTOsByID() {
-        //Given
+        // Given
         User user = new User();
-        int userId = 1;
-        user.setId(userId);
-        Subscription sub = new Subscription("test", 10.99, BillingCycle.ANNUALLY, LocalDate.now(), Category.STREAMING, "AMEX", user, Status.ACTIVE);
-        int subscriptionId = 1;
-        sub.setId(subscriptionId);
-        SubscriptionDTO expected = underTest.convertToDTO(sub);
-
-        when(subscriptionRepository.findById(subscriptionId)).thenReturn(Optional.of(sub));
+        user.setId(1);
+        // This is the subscription we force findBySubID to return in the when
+        Subscription sub = new Subscription("test", 10.99, BillingCycle.ANNUALLY,
+                LocalDate.of(2020, 1, 1), Category.STREAMING, "AMEX", user, Status.ACTIVE);
+        sub.setId(1);
+        // DTO we expect to be created if getSubDTOById works as intended
+        SubscriptionDTO expected = new SubscriptionDTO(sub, LocalDate.of(2020, 1, 1).plusYears(1));
+        // Tells next call to just return sub
+        when(subscriptionRepository.findById(1)).thenReturn(Optional.of(sub));
 
         // When
         SubscriptionDTO result = underTest.getSubscriptionDTOsById(1);
 
         // Then
+
+        assertNotNull(result);
         assertEquals(expected, result);
+    }
+
+    @Test
+    void canCreateSubscriptionWithUsername() {
+        // Given
+        String username = "testuser";
+        SubscriptionRequestDTO requestDTO = new SubscriptionRequestDTO(
+                "Netflix", 15.99, BillingCycle.MONTHLY,
+                LocalDate.of(2020,1,1), Category.STREAMING,
+                "VISA", Status.ACTIVE);
+
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setUsername(username);
+
+        Subscription mockMappedSubscription = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+
+        Subscription mockSavedSubscription = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        mockSavedSubscription.setId(1); // Simulating the saved subscription has an ID
+
+        SubscriptionDTO expectedDTO = new SubscriptionDTO(mockSavedSubscription,
+                LocalDate.now().plusMonths(1));
+
+        // Mock the dependencies
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        doReturn(mockMappedSubscription).when(underTest).mapToSubscription(requestDTO, mockUser);
+        when(subscriptionRepository.save(mockMappedSubscription)).thenReturn(mockSavedSubscription);
+        doReturn(expectedDTO).when(underTest).convertToDTO(mockSavedSubscription);
+
+        // When
+        SubscriptionDTO result = underTest.createSubscriptionWithUsername(requestDTO, username);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(expectedDTO, result);
+
+        // Verify the method calls happened in the right order
+        verify(underTest).findByUsername(username);
+        verify(underTest).mapToSubscription(requestDTO, mockUser);
+        verify(subscriptionRepository).save(mockMappedSubscription);
+        verify(underTest).convertToDTO(mockSavedSubscription);
+    }
+
+    @Test
+    void canDeleteSubscription() {
+        // Given
+        User mockUser = new User();
+        mockUser.setId(1);
+
+        Subscription mockSub = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        int subId = 1;
+        mockSub.setId(subId);
+
+        // Mock the dependencies
+        doReturn(mockSub).when(underTest).findBySubscriptionId(subId);
+
+        // When
+        underTest.deleteSubscription(subId);
+
+        // Then
+        verify(subscriptionRepository).delete(mockSub);
+
+    }
+
+    @Test
+    void canUpdateSubscriptionWithCostChange() {
+        // Given
+        User mockUser = new User();
+        mockUser.setId(1);
+
+        Subscription mockOriginalSub = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        int subId = 1;
+        mockOriginalSub.setId(subId);
+
+        // Updated variables
+        Double updatedCost = 20.00;
+
+        SubscriptionRequestDTO mockUpdatedRequestDTO = new SubscriptionRequestDTO("Netflix", updatedCost,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, "VISA", Status.ACTIVE);
+
+
+        // Mock the dependencies
+        doReturn(mockOriginalSub).when(underTest).findBySubscriptionId(subId);
+        when(subscriptionRepository.save(mockOriginalSub)).thenReturn(mockOriginalSub);
+
+        // When
+        SubscriptionDTO result = underTest.updateSubscription(subId, mockUpdatedRequestDTO);
+
+        // Then
+        verify(subscriptionRepository).save(mockOriginalSub);
+        assertEquals(mockOriginalSub.getCost(), updatedCost);
+        assertEquals(result.getCost(), updatedCost);
+    }
+
+    @Test
+    void canUpdateSubscriptionWithCostChangeAndNulls() {
+        // Given
+        User mockUser = new User();
+        mockUser.setId(1);
+
+        Subscription mockOriginalSub = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        int subId = 1;
+        mockOriginalSub.setId(subId);
+
+        // Updated variables
+        Double updatedCost = 20.00;
+
+        SubscriptionRequestDTO mockUpdatedRequestDTO = new SubscriptionRequestDTO(null, updatedCost,
+                null, null, null, null, null);
+
+
+        // Mock the dependencies
+        doReturn(mockOriginalSub).when(underTest).findBySubscriptionId(subId);
+        when(subscriptionRepository.save(mockOriginalSub)).thenReturn(mockOriginalSub);
+
+        // When
+        SubscriptionDTO result = underTest.updateSubscription(subId, mockUpdatedRequestDTO);
+
+        // Then
+        verify(subscriptionRepository).save(mockOriginalSub);
+        assertEquals(mockOriginalSub.getCost(), updatedCost);
+        assertEquals(result.getCost(), updatedCost);
+    }
+
+    @Test
+    void canUpdateSubscriptionWithMultipleChanges() {
+        // Given
+        User mockUser = new User();
+        mockUser.setId(1);
+
+        Subscription mockOriginalSub = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        int subId = 1;
+        mockOriginalSub.setId(subId);
+
+        // Updated variables
+        String updatedName = "NETFLIX";
+        String updatedPaymentMethod = "AMEX";
+        Double updatedCost = 20.00;
+
+        SubscriptionRequestDTO mockUpdatedRequestDTO = new SubscriptionRequestDTO(updatedName, updatedCost,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, updatedPaymentMethod, Status.ACTIVE);
+
+
+        // Mock the dependencies
+        doReturn(mockOriginalSub).when(underTest).findBySubscriptionId(subId);
+        when(subscriptionRepository.save(mockOriginalSub)).thenReturn(mockOriginalSub);
+
+        // When
+        SubscriptionDTO result = underTest.updateSubscription(subId, mockUpdatedRequestDTO);
+
+        // Then
+        verify(subscriptionRepository).save(mockOriginalSub);
+        assertEquals(mockOriginalSub.getCost(), updatedCost);
+        assertEquals(result.getCost(), updatedCost);
+        assertEquals(result.getServiceName(), updatedName);
+        assertEquals(result.getPaymentMethod(), updatedPaymentMethod);
+        assertEquals(mockOriginalSub.getServiceName(), updatedName);
+        assertEquals(mockOriginalSub.getPaymentMethod(), updatedPaymentMethod);
+    }
+
+    @Test
+    void canUpdateSubscriptionWithAllChanges() {
+        // Given
+        User mockUser = new User();
+        mockUser.setId(1);
+
+        Subscription mockOriginalSub = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.now(), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        int subId = 1;
+        mockOriginalSub.setId(subId);
+
+        // Updated Variables
+        String updatedName = "NETFLIX";
+        Double updatedCost = 20.00;
+        BillingCycle updatedBC = BillingCycle.ANNUALLY;
+        LocalDate updatedDate = LocalDate.now().plusYears(1);
+        Category updatedCategory = Category.FOOD;
+        String updatedPaymentMethod = "AMEX";
+        Status updatedStatus = Status.PAUSED;
+
+        SubscriptionRequestDTO mockUpdatedRequestDTO = new SubscriptionRequestDTO(updatedName, updatedCost,
+                updatedBC, updatedDate, updatedCategory, updatedPaymentMethod, updatedStatus);
+
+
+        // Mock the dependencies
+        doReturn(mockOriginalSub).when(underTest).findBySubscriptionId(subId);
+        when(subscriptionRepository.save(mockOriginalSub)).thenReturn(mockOriginalSub);
+
+        // When
+        SubscriptionDTO result = underTest.updateSubscription(subId, mockUpdatedRequestDTO);
+
+        // Then
+        verify(subscriptionRepository).save(mockOriginalSub);
+        assertEquals(mockOriginalSub.getCost(), updatedCost);
+        assertEquals(result.getCost(), updatedCost);
+        assertEquals(result.getServiceName(), updatedName);
+        assertEquals(mockOriginalSub.getServiceName(), updatedName);
+        assertEquals(result.getPaymentMethod(), updatedPaymentMethod);
+        assertEquals(mockOriginalSub.getPaymentMethod(), updatedPaymentMethod);
+        assertEquals(mockOriginalSub.getCategory(), updatedCategory);
+        assertEquals(result.getCategory(), updatedCategory);
+        assertEquals(mockOriginalSub.getBillingCycle(), updatedBC);
+        assertEquals(result.getBillingCycle(), updatedBC);
+        assertEquals(mockOriginalSub.getStatus(), updatedStatus);
+        assertEquals(result.getStatus(), updatedStatus);
+        assertEquals(mockOriginalSub.getLastPaymentDate(), updatedDate);
+        assertEquals(result.getLastPaymentDate(), updatedDate);
+    }
+
+    @Test
+    void willNotUpdateSubscriptionWithoutChanges() {
+        // Given
+        User mockUser = new User();
+        mockUser.setId(1);
+
+        Subscription mockOriginalSub = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.of(2020,1,1), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        int subId = 1;
+        mockOriginalSub.setId(subId);
+
+        // Same exact variables
+        SubscriptionRequestDTO mockUpdatedRequestDTO = new SubscriptionRequestDTO("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.of(2020, 1, 1), Category.STREAMING, "VISA", Status.ACTIVE);
+
+        // Mock the dependencies
+        doReturn(mockOriginalSub).when(underTest).findBySubscriptionId(subId);
+
+        // When
+        SubscriptionDTO result = underTest.updateSubscription(subId, mockUpdatedRequestDTO);
+
+        // Then
+        verify(subscriptionRepository, never()).save(mockOriginalSub);
+    }
+
+    @Test
+    void willNotUpdateSubscriptionWithAllNulls() {
+        // Given
+        User mockUser = new User();
+        mockUser.setId(1);
+
+        Subscription mockOriginalSub = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.of(2020,1,1), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        int subId = 1;
+        mockOriginalSub.setId(subId);
+
+        // All variables are null
+        SubscriptionRequestDTO mockUpdatedRequestDTO = new SubscriptionRequestDTO(null, null,
+                null, null, null, null, null);
+
+        // Mock the dependencies
+        doReturn(mockOriginalSub).when(underTest).findBySubscriptionId(subId);
+
+        // When
+        SubscriptionDTO result = underTest.updateSubscription(subId, mockUpdatedRequestDTO);
+
+        // Then
+        verify(subscriptionRepository, never()).save(mockOriginalSub);
+    }
+
+    @Test
+    void canGetAllSubscriptions() {
+        // Given
+        User mockUser = new User();
+        int userId = 1;
+        mockUser.setId(userId);
+
+        Subscription mockSub = new Subscription("Netflix", 15.99,
+                BillingCycle.MONTHLY, LocalDate.of(2020,1,1), Category.STREAMING, "VISA",
+                mockUser, Status.ACTIVE);
+        int subId = 1;
+        mockSub.setId(subId);
+
+        LocalDate expectedNRD = LocalDate.of(2020,1,1).plusMonths(1);
+
+        List<Subscription> mockSubList = List.of(mockSub);
+
+        // Mock the dependency
+        when(subscriptionRepository.findAll()).thenReturn(mockSubList);
+        doReturn(expectedNRD).when(underTest).calculateNextRenewalDate(mockSub);
+        // When
+        List<SubscriptionDTO> result = underTest.getSubscriptionDTOs();
+        // Then
+        verify(subscriptionRepository).findAll();
+        verify(underTest).calculateNextRenewalDate(mockSub);
+        assertEquals(result.size(), 1);
+        SubscriptionDTO dto = result.get(0);
+        assertEquals(dto.getServiceName(), mockSub.getServiceName());
+        assertEquals(dto.getCost(), mockSub.getCost());
+        assertEquals(dto.getPaymentMethod(), mockSub.getPaymentMethod());
+        assertEquals(dto.getCategory(), mockSub.getCategory());
+        assertEquals(dto.getBillingCycle(), mockSub.getBillingCycle());
+        assertEquals(dto.getLastPaymentDate(), mockSub.getLastPaymentDate());
+        assertEquals(dto.getStatus(), mockSub.getStatus());
+        assertEquals(dto.getNextRenewalDate(), expectedNRD);
     }
 }
