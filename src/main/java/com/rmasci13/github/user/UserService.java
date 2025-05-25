@@ -110,13 +110,13 @@ public class UserService implements UserDetailsService {
     }
 
     //Convert Subscription to SubscriptionDTO
-    private SubscriptionDTO mapSubEntToSubDTO(Subscription subscription) {
+    public SubscriptionDTO mapSubEntToSubDTO(Subscription subscription) {
         LocalDate nextRenewalDate = subscriptionService.calculateNextRenewalDate(subscription);
         return new SubscriptionDTO(subscription, nextRenewalDate);
     }
 
     //Convert UserRequestDTO to a User, used in creation of new User
-    private User mapUserRequestDTOToUserEnt(UserRequestDTO userRequestDTO) {
+    public User mapUserRequestDTOToUserEnt(UserRequestDTO userRequestDTO) {
         User user = new User();
         user.setUsername(userRequestDTO.username());
         user.setEmail(userRequestDTO.email());
@@ -125,12 +125,12 @@ public class UserService implements UserDetailsService {
     }
 
     //Find a User by a given ID
-    private User findByUserId(Integer id) {
+    public User findByUserId(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found with ID: " + id));
     }
 
     //Find a User by a given username
-    private User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username));
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 }

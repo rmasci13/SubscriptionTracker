@@ -1,18 +1,16 @@
 package com.rmasci13.github.subscription;
+
 import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.Category;
 import com.rmasci13.github.enums.Status;
 import com.rmasci13.github.exception.ItemNotFoundException;
 import com.rmasci13.github.user.User;
 import com.rmasci13.github.user.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
