@@ -1,6 +1,12 @@
 package com.rmasci13.github.user;
 
+import com.rmasci13.github.enums.BillingCycle;
+import com.rmasci13.github.enums.Category;
+import com.rmasci13.github.enums.Status;
 import com.rmasci13.github.exception.ItemNotFoundException;
+import com.rmasci13.github.subscription.Subscription;
+import com.rmasci13.github.subscription.SubscriptionDTO;
+import com.rmasci13.github.subscription.SubscriptionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -10,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +31,12 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
     @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private SubscriptionService subscriptionService;
+
+    @Mock
     private UserRepository userRepository;
 
     @Spy
@@ -31,16 +45,26 @@ class UserServiceTest {
 
     User mockUser1 = new User();
     User mockUser2 = new User();
+    Subscription mockSub1;
+    Subscription mockSub2;
 
     @BeforeEach
     void setUp() {
         mockUser1.setUsername("u");
         mockUser1.setEmail("e");
+        mockUser1.setPassword("p");
         mockUser1.setSubscriptions(new ArrayList<>());
         mockUser1.setId(1);
         mockUser2.setUsername("u2");
         mockUser2.setEmail("e2");
+        mockUser2.setPassword("p2");
         mockUser2.setSubscriptions(new ArrayList<>());
+        mockSub1 = new Subscription("Netflix", 10.99, BillingCycle.MONTHLY,
+                LocalDate.of(2020,1,1), Category.STREAMING,
+                "AMEX", mockUser1, Status.ACTIVE);
+        mockSub2 = new Subscription("Factor", 99.99, BillingCycle.ANNUALLY,
+                LocalDate.of(2020,1,1), Category.FOOD,
+                "VISA", mockUser1, Status.ACTIVE);
     }
 
     @Test
@@ -86,6 +110,87 @@ class UserServiceTest {
 
     @Test
     void deleteUser() {
+    }
+
+    @Test
+    void canMapUserToUserDTOWhenNullSubscriptions() {
+        // Given using mockUser1 from BeforeEach setup with null for list of Subscriptions
+        mockUser1.setSubscriptions(null);
+        List<SubscriptionDTO> expectedSubDTOList = new ArrayList<>();
+        UserDTO expectedUserDTO = new UserDTO(mockUser1.getUsername(), mockUser1.getEmail(), expectedSubDTOList);
+
+        // When
+        UserDTO result = underTest.mapToUserDTO(mockUser1);
+
+        // Then
+        assertEquals(expectedUserDTO, result);
+    }
+
+    @Test
+    void canMapUserToUserDTOWhenMultipleSubscriptions() {
+        // Given using mockUser1 from BeforeEach setup converted to DTO as an expected result
+        mockUser1.setSubscriptions(List.of(mockSub1, mockSub2));
+        LocalDate nrd1 = mockSub1.getLastPaymentDate().plusMonths(1);
+        LocalDate nrd2 = mockSub2.getLastPaymentDate().plusYears(1);
+        SubscriptionDTO mockSubDTO1 = new SubscriptionDTO(mockSub1, nrd1);
+        SubscriptionDTO mockSubDTO2 = new SubscriptionDTO(mockSub2, nrd2);
+        List<SubscriptionDTO> expectedSubDTOList = List.of(mockSubDTO1, mockSubDTO2);
+        UserDTO expectedUserDTO = new UserDTO(mockUser1.getUsername(), mockUser1.getEmail(), expectedSubDTOList);
+
+        // Mock the dependencies
+        doReturn(mockSubDTO1).when(underTest).mapSubEntToSubDTO(mockSub1);
+        doReturn(mockSubDTO2).when(underTest).mapSubEntToSubDTO(mockSub2);
+
+        // When
+        UserDTO result = underTest.mapToUserDTO(mockUser1);
+
+        // Then
+        assertEquals(expectedUserDTO, result);
+    }
+
+    @Test
+    void canMapSubscriptionEntityToSubDTO() {
+        // Given
+        Subscription sub = new Subscription("Netflix", 10.99, BillingCycle.MONTHLY,
+                LocalDate.of(2020,1,1), Category.STREAMING,
+                "AMEX", mockUser1, Status.ACTIVE);
+        LocalDate expectedNRD = LocalDate.of(2020, 1, 1).plusMonths(1);
+
+        // Mock the dependencies
+        when(subscriptionService.calculateNextRenewalDate(sub)).thenReturn(expectedNRD);
+
+        // When
+        SubscriptionDTO result = underTest.mapSubEntToSubDTO(sub);
+
+        // Then
+        verify(subscriptionService).calculateNextRenewalDate(sub);
+        assertEquals(expectedNRD, result.getNextRenewalDate());
+        assertEquals(sub.getBillingCycle(), result.getBillingCycle());
+        assertEquals(sub.getCategory(), result.getCategory());
+        assertEquals(sub.getUser().getId(), result.getUserID());
+        assertEquals(sub.getServiceName(), result.getServiceName());
+        assertEquals(sub.getCost(), result.getCost());
+        assertEquals(sub.getPaymentMethod(), result.getPaymentMethod());
+        assertEquals(sub.getStatus(), result.getStatus());
+    }
+
+    @Test
+    void canMapUserRequestDTOTOUserEntity() {
+        // Given
+        UserRequestDTO mockRequestDTO = new UserRequestDTO(1, "u","e","p");
+        String passwordAfterMockedEncoder = "encodedPassword";
+
+        // Mock the dependencies
+        when(passwordEncoder.encode(mockRequestDTO.password())).thenReturn(passwordAfterMockedEncoder);
+
+        // When
+        User result = underTest.mapUserRequestDTOToUserEnt(mockRequestDTO);
+
+        // Then
+        assertEquals(result.getPassword(), passwordAfterMockedEncoder);
+        assertEquals(result.getUsername(), mockRequestDTO.username());
+        assertEquals(result.getEmail(), mockRequestDTO.email());
+        verify(passwordEncoder).encode(mockRequestDTO.password());
     }
 
     @Test

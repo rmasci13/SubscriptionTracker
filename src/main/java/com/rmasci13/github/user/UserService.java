@@ -94,9 +94,9 @@ public class UserService implements UserDetailsService {
 
 //------------------------------------------------------------------------PRIVATE HELPER METHODS------------------------------------------------------------------------
 
-    //Private helper converting User to UserDTO,
-    //utilizing private helper converting Subscription to SubscriptionDTO
-    private UserDTO mapToUserDTO(User user) {
+    //Helper converting User to UserDTO,
+    //utilizing helper converting Subscription to SubscriptionDTO
+    public UserDTO mapToUserDTO(User user) {
         List<SubscriptionDTO> subscriptionDTOs;
         if (user.getSubscriptions() != null) {
             subscriptionDTOs = user.getSubscriptions().stream()
