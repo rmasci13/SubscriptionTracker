@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -23,8 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,15 +89,69 @@ class UserServiceTest {
     }
 
     @Test
-    void canGetUser() {
-        // Given
+    void canGetUserById() {
+        // Given mockUser1 from BeforeEach setUp()
+        Integer mockUserId = mockUser1.getId();
+        UserDTO expectedDTO = new UserDTO(mockUser1.getUsername(), mockUser1.getEmail(), new ArrayList<>());
 
         // Mock the dependency
+        doReturn(mockUser1).when(underTest).findByUserId(mockUserId);
+
+        // When
+        UserDTO result = underTest.getUser(mockUserId);
+
+        // Then
+        assertEquals(expectedDTO, result);
     }
 
     @Test
     void canGetUserByUsername() {
+        // Given mockUser1 from BeforeEach setUp()
+        String username = mockUser1.getUsername();
+        UserDTO expectedDTO = new UserDTO(mockUser1.getUsername(), mockUser1.getEmail(), new ArrayList<>());
 
+        // Mock the dependency
+        doReturn(mockUser1).when(underTest).findByUsername(username);
+
+        // When
+        UserDTO result = underTest.getUserByUsername(username);
+
+        // Then
+        assertEquals(expectedDTO, result);
+    }
+
+    @Test
+    void canLoadUserByUsername() {
+        // Given mockUser1 from BeforeEach setUp()
+        String username = mockUser1.getUsername();
+
+        // Mock the dependency
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser1));
+
+        // When
+        UserDetails result = underTest.loadUserByUsername(username);
+
+        // Then
+        verify(userRepository).findByUsername(username);
+        assertEquals(mockUser1.getUsername(), result.getUsername());
+        assertEquals(mockUser1.getPassword(), result.getPassword());
+    }
+
+    @Test
+    void willThrowUsernameNotFoundExceptionWhenUserDetailsNotFound() {
+        // Given mockUser1 from BeforeEach setUp()
+        String username = "no_such_user";
+
+        // Mock the dependency
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        // When
+        UsernameNotFoundException thrown = assertThrows(UsernameNotFoundException.class, () ->
+                underTest.loadUserByUsername(username));
+
+        // Then
+        verify(userRepository).findByUsername(username);
+        assertEquals("User not found with username: " + username, thrown.getMessage());
     }
 
     @Test
@@ -105,11 +159,124 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser() {
+    void willNotUpdateUserWhenAllFieldsSame() {
+        // Given mockUser1 from BeforeEach setUp()
+        UserRequestDTO mockRequestDTO = new UserRequestDTO(1, mockUser1.getUsername(),
+                mockUser1.getEmail(), mockUser1.getPassword());
+        UserDTO expectedDTO  = new UserDTO(mockUser1.getUsername(), mockUser1.getEmail(), new ArrayList<>());
+
+        // Mock the dependencies
+        doReturn(mockUser1).when(underTest).findByUserId(1);
+
+        // When
+        UserDTO result = underTest.updateUser(1, mockRequestDTO);
+
+        // Then
+        verify(userRepository, never()).save(any(User.class));
+        assertEquals(expectedDTO, result);
+        assertEquals(mockUser1.getEmail(), result.email());
+        assertEquals(mockUser1.getUsername(), result.username());
     }
 
     @Test
-    void deleteUser() {
+    void willNotUpdateUserWhenAllNull() {
+        // Given mockUser1 from BeforeEach setUp()
+        UserRequestDTO mockRequestDTO = new UserRequestDTO(1, null, null, null);
+        UserDTO expectedDTO  = new UserDTO(mockUser1.getUsername(), mockUser1.getEmail(), new ArrayList<>());
+
+        // Mock the dependencies
+        doReturn(mockUser1).when(underTest).findByUserId(1);
+
+        // When
+        UserDTO result = underTest.updateUser(1, mockRequestDTO);
+
+        // Then
+        verify(userRepository, never()).save(any(User.class));
+        assertEquals(expectedDTO, result);
+        assertEquals(mockUser1.getEmail(), result.email());
+        assertEquals(mockUser1.getUsername(), result.username());
+    }
+
+    @Test
+    void canUpdateUserWithOneChangeAndNulls() {
+        // Given mockUser1 from BeforeEach setUp()
+        String originalUsername = mockUser1.getUsername();
+        String newUsername = "changedUsername";
+        UserRequestDTO mockRequestDTO = new UserRequestDTO(1, newUsername, null, null);
+        UserDTO expectedDTO  = new UserDTO(newUsername, mockUser1.getEmail(), new ArrayList<>());
+
+        // Mock the dependencies
+        doReturn(mockUser1).when(underTest).findByUserId(1);
+
+        // When
+        UserDTO result = underTest.updateUser(1, mockRequestDTO);
+
+        // Then
+        verify(userRepository).save(mockUser1);
+        assertEquals(expectedDTO, result);
+        assertEquals(mockUser1.getEmail(), result.email());
+        assertEquals(mockUser1.getUsername(), result.username());
+        assertNotEquals(originalUsername, result.username());
+    }
+
+    @Test
+    void canUpdateUserWithOneChange() {
+        // Given mockUser1 from BeforeEach setUp()
+        String originalUsername = mockUser1.getUsername();
+        String newUsername = "changedUsername";
+        UserRequestDTO mockRequestDTO = new UserRequestDTO(1, newUsername, mockUser1.getEmail(), mockUser1.getPassword());
+        UserDTO expectedDTO  = new UserDTO(newUsername, mockUser1.getEmail(), new ArrayList<>());
+
+        // Mock the dependencies
+        doReturn(mockUser1).when(underTest).findByUserId(1);
+
+        // When
+        UserDTO result = underTest.updateUser(1, mockRequestDTO);
+
+        // Then
+        verify(userRepository).save(mockUser1);
+        assertEquals(expectedDTO, result);
+        assertEquals(mockUser1.getEmail(), result.email());
+        assertEquals(mockUser1.getUsername(), result.username());
+        assertNotEquals(originalUsername, result.username());
+    }
+
+    @Test
+    void canUpdateUserWithMultipleChanges() {
+        // Given mockUser1 from BeforeEach setUp()
+        String originalUsername = mockUser1.getUsername();
+        String originalEmail = mockUser1.getEmail();
+        String newUsername = "changedUsername";
+        String newEmail = "changedEmail";
+        String newPassword = "changedPassword";
+        UserRequestDTO mockRequestDTO = new UserRequestDTO(1, newUsername, newEmail, newPassword);
+        UserDTO expectedDTO  = new UserDTO(newUsername, newEmail, new ArrayList<>());
+
+        // Mock the dependencies
+        doReturn(mockUser1).when(underTest).findByUserId(1);
+
+        // When
+        UserDTO result = underTest.updateUser(1, mockRequestDTO);
+
+        // Then
+        verify(userRepository).save(mockUser1);
+        assertEquals(expectedDTO, result);
+        assertNotEquals(originalUsername, result.username());
+        assertNotEquals(originalEmail, result.email());
+    }
+
+    @Test
+    void canDeleteUser() {
+        // Given mockUser1 from BeforeEach setUp()
+
+        // Mock the dependencies
+        doReturn(mockUser1).when(underTest).findByUserId(1);
+
+        // When
+        underTest.deleteUser(1);
+
+        // Then
+        verify(userRepository).delete(mockUser1);
     }
 
     @Test

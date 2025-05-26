@@ -56,7 +56,7 @@ public class UserService implements UserDetailsService {
     //Get User by Username, required by UserDetailsService
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found:" + username));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
     //Create a new User, for POST requests
@@ -72,17 +72,23 @@ public class UserService implements UserDetailsService {
 
     //Update user, for PUT requests
     public UserDTO updateUser(@PathVariable Integer id, UserRequestDTO userRequestDTO) {
+        boolean thereWasAnUpdate = false;
         User user = findByUserId(id);
-        if (userRequestDTO.hasUsername()) {
+        if (userRequestDTO.hasUsername() && !userRequestDTO.username().equals(user.getUsername())) {
+            thereWasAnUpdate = true;
             user.setUsername(userRequestDTO.username());
         }
-        if (userRequestDTO.hasPassword()) {
+        if (userRequestDTO.hasPassword() && !userRequestDTO.password().equals(user.getPassword())) {
+            thereWasAnUpdate = true;
             user.setPassword(passwordEncoder.encode(userRequestDTO.password()));
         }
-        if (userRequestDTO.hasEmail()) {
+        if (userRequestDTO.hasEmail() && !userRequestDTO.email().equals(user.getEmail())) {
+            thereWasAnUpdate = true;
             user.setEmail(userRequestDTO.email());
         }
-        User updated = userRepository.save(user);
+        if (thereWasAnUpdate) {
+            User updated = userRepository.save(user);
+        }
         return mapToUserDTO(user);
     }
 
