@@ -3,6 +3,7 @@ package com.rmasci13.github.user;
 import com.rmasci13.github.enums.BillingCycle;
 import com.rmasci13.github.enums.Category;
 import com.rmasci13.github.enums.Status;
+import com.rmasci13.github.exception.ForbiddenException;
 import com.rmasci13.github.exception.ItemNotFoundException;
 import com.rmasci13.github.subscription.Subscription;
 import com.rmasci13.github.subscription.SubscriptionDTO;
@@ -155,7 +156,44 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser() {
+    void canCreateNewUserIfNewInformation() {
+        // Given
+        UserRequestDTO requestDTO = new UserRequestDTO(100, "new_username",
+                "new_email", "new_password");
+        User mockNewUser = new User("new_username", "new_email", "new_password");
+        UserDTO expectedDTO = new UserDTO(mockNewUser.getUsername(), mockNewUser.getEmail(), new ArrayList<>());
+
+        // Mock the dependencies
+        when(userRepository.findByUsername("new_username")).thenReturn(Optional.empty());
+        doReturn(mockNewUser).when(underTest).mapUserRequestDTOToUserEnt(requestDTO);
+        when(userRepository.save(mockNewUser)).thenReturn(mockNewUser);
+
+        // When
+        UserDTO result = underTest.createUser(requestDTO);
+
+        // Then
+        verify(userRepository).findByUsername("new_username");
+        verify(userRepository).save(any(User.class));
+        assertEquals(expectedDTO, result);
+    }
+
+    @Test
+    void willThrowExceptionWhenUserAlreadyExistsCreatingNewUser() {
+        // Given mockUser1 from BeforeEach setUp()
+        String takenUsername = "u";
+        UserRequestDTO requestDTO = new UserRequestDTO(1, takenUsername, "e", "p");
+        // Mock the dependencies
+        when(userRepository.findByUsername(takenUsername)).thenReturn(Optional.of(mockUser1));
+
+        // When
+        ForbiddenException thrown = assertThrows(ForbiddenException.class, () -> {
+           underTest.createUser(requestDTO);
+        });
+
+        // Then
+        verify(userRepository).findByUsername(takenUsername);
+        assertEquals("User with username " + takenUsername + " already exists",
+                thrown.getMessage());
     }
 
     @Test
